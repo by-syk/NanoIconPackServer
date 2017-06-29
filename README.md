@@ -11,6 +11,13 @@
 目前服务器由我维护，如果您正在基于 NanoIconPack 开发自己的图标包，祝贺，您已经免费接入它了。当然，您也可以利用开源的代码自己搭建图标包服务器。
 
 
+### 图标包为什么需要服务器？
+
+在图标申请这个功能上，当前大部分图标包主要采用的是邮件方式，不过这并不友好，不仅用户需要多步操作，而且作者对收到的申请邮件也难于进一步统计。所以我们决定借助服务器的支持来简化这一过程，使用户一步申请图标、作者直接看到申请统计结果。
+
+> 这种方案最初见于 [@sorcerer](http://www.coolapk.com/u/420016) 的 **[Sorcery 图标](http://www.coolapk.com/apk/com.sorcerer.sorcery.iconpack)**（未考究）。NanoIconPack 只是重走了 **Sorcery 图标** 的路。
+
+
 ### 服务器搭建
 
 开发者的搭建环境是 **Ubuntu 14.04.4**、**Node.js v6.2.0**、**MySQL v5.5.53**，并使用 [**forever** 模块](https://github.com/foreverjs/forever)来持久化运行。
@@ -41,19 +48,12 @@ forever start nano8083.js
 >   ├ src/        // 接口部分
 >   ├ pages/      // 网页部分
 >   ├ logs/       // 日志存放文件夹
->   ├ art/        // 图（运行无关）
 >   ├ dll/        // 库表（运行无关）
+>   ├ art/        // 图（运行无关）
 >   ├ .gitignore  // （运行无关）
 >   ├ LICENSE     // （运行无关）
 >   └ README.md   // （运行无关）
 > ```
-
-
-### 图标包为什么需要服务器？
-
-在图标申请这个功能上，当前大部分图标包主要采用的是邮件方式，不过这并不友好，不仅用户需要多步操作，而且作者对收到的申请邮件也难于进一步统计。所以我们决定借助服务器的支持来简化这一过程，使用户一步申请图标、作者直接看到申请统计结果。
-
-> 这种方案最初见于 [@sorcerer](http://www.coolapk.com/u/420016) 的 **[Sorcery 图标](http://www.coolapk.com/apk/com.sorcerer.sorcery.iconpack)**（未考究）。NanoIconPack 只是重走了 **Sorcery 图标** 的路。
 
 
 ### 微控制台
