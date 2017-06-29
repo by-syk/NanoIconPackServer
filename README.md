@@ -40,6 +40,7 @@ forever start nano8083.js
 > NanoIconPackServer/
 >   ├ src/        // 接口部分
 >   ├ pages/      // 网页部分
+>   ├ logs/       // 日志存放文件夹
 >   ├ art/        // 图（运行无关）
 >   ├ dll/        // 库表（运行无关）
 >   ├ .gitignore  // （运行无关）
