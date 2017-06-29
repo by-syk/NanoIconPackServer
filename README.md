@@ -1,7 +1,7 @@
 # NanoIconPack 服务端
 
-[![Server Of](https://img.shields.io/badge/ServerOf-NanoIconPack-green.svg)](https://github.com/by-syk/NanoIconPack)
-[![Powered By](https://img.shields.io/badge/PoweredBy-Node.js-brightgreen.svg)](https://nodejs.org/en/)
+[![Server Of](https://img.shields.io/badge/server%20of-NanoIconPack-brightgreen.svg)](https://github.com/by-syk/NanoIconPack)
+[![Powered By](https://img.shields.io/badge/powered%20by-Node.js-green.svg)](https://nodejs.org/en/)
 
 
 ### 服务器
@@ -27,12 +27,23 @@ npm install log4j
 ```
 
 
-在建好库表后（[库表结构](https://github.com/by-syk/NanoIconPackServer/blob/master/dll/sql.dll)），启动：
+在建好库表后（[库表结构](https://github.com/by-syk/NanoIconPackServer/blob/master/dll/sql.dll)），启动测试：
 
 ```
 cd /home/NanoIconPackServer/src
 forever start nano8082.js
 ```
+
+> 项目目录结构：
+> 
+> NanoIconPackServer/
+>   ├ src/        // 接口部分
+>   ├ pages/      // 网页部分
+>   ├ art/        // 图片（运行无关）
+>   ├ dll/        // 库表（运行无关）
+>   ├ .gitignore  // （运行无关）
+>   ├ LICENSE     // （运行无关）
+>   └ README.md   // （运行无关）
 
 
 ### 图标包为什么需要服务器？
