@@ -3,7 +3,7 @@
 
 ### 服务器
 
-NanoIconPack 是一个开源的图标包APP模版（[去查看](https://github.com/by-syk/NanoIconPack)），拥有一个轻量的服务器，提供图标申请和申请统计两大服务。
+**NanoIconPack** 是一个开源的图标包APP模版（[去查看](https://github.com/by-syk/NanoIconPack)），拥有一个轻量的服务器，提供图标申请和申请统计两大服务。
 
 服务器由神奇的 **[Node.js®](https://nodejs.org/en/)** 驱动，够简单、够轻量。如果您有兴趣，欢迎和我一起改进。
 
@@ -36,7 +36,7 @@ forever start nano8082.js
 
 在图标申请这个功能上，当前大部分图标包主要采用的是邮件方式，不过这并不友好，不仅用户需要多步操作，而且作者对收到的申请邮件也难于进一步统计。所以我们决定借助服务器的支持来简化这一过程，使用户一步申请图标、作者直接看到申请统计结果。
 
-这种方案最初见于 [@sorcerer](http://www.coolapk.com/u/420016) 的 **[Sorcery 图标](http://www.coolapk.com/apk/com.sorcerer.sorcery.iconpack)**（未考究）。NanoIconPack 只是重走了 **Sorcery 图标** 的路。
+> 这种方案最初见于 [@sorcerer](http://www.coolapk.com/u/420016) 的 **[Sorcery 图标](http://www.coolapk.com/apk/com.sorcerer.sorcery.iconpack)**（未考究）。NanoIconPack 只是重走了 **Sorcery 图标** 的路。
 
 
 ### 微控制台
@@ -44,6 +44,26 @@ forever start nano8082.js
 http://nano.by-syk.com
 
 [![NanoConsole](art/nano_console.png)](http://nano.by-syk.com)
+
+提供的服务包括：
+
++ APP代码速查
+  
+  [![NanoQuery](art/nano_query.png)](http://nano.by-syk.com/page/query)
+
++ 常用APP代码
+
+  [![NanoBase](art/nano_base.png)](http://nano.by-syk.com/page/base)
+
++ 图标包统计
+
+  [![NanoStats](art/nano_stats.png)](http://nano.by-syk.com/page/stats)
+
++ 申请管理
+
+  [![NanoMark](art/nano_mark.png)](http://nano.by-syk.com/page/mark)
+
+> 前端页面基于 [**Bootstrap** 框架](http://v3.bootcss.com/)开发。
 
 
 ### License
