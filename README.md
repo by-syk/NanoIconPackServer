@@ -40,7 +40,7 @@ forever start nano8082.js
 > NanoIconPackServer/
 >   ├ src/        // 接口部分
 >   ├ pages/      // 网页部分
->   ├ art/        // 图片（运行无关）
+>   ├ art/        // 图（运行无关）
 >   ├ dll/        // 库表（运行无关）
 >   ├ .gitignore  // （运行无关）
 >   ├ LICENSE     // （运行无关）
@@ -79,7 +79,7 @@ http://nano.by-syk.com
 
   [![NanoMark](art/nano_mark.png)](http://nano.by-syk.com/page/mark)
 
-> 前端页面基于 [**Bootstrap** 框架](http://v3.bootcss.com/)开发。
+> 前端页面基于 [**Bootstrap**](http://v3.bootcss.com/)、[**jQuery**](http://jquery.com/) 开发。
 
 
 ### License
