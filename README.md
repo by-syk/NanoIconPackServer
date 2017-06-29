@@ -24,13 +24,15 @@ npm install body-parser
 npm install log4j
 ```
 
-
 在建好库表后（[库表结构](https://github.com/by-syk/NanoIconPackServer/blob/master/dll/sql.dll)），启动：
 
 ```
 cd /home/NanoIconPackServer/src
 forever start nano8082.js
+forever start nano8083.js
 ```
+
+*nano8082.js 和 nano8083.js 除了侦听端口不同，其它完全相同。同时运行多个是为了提高稳定性。*
 
 > 项目目录结构：
 > 
