@@ -4,8 +4,6 @@
 [![Powered By](https://img.shields.io/badge/powered%20by-Node.js-green.svg)](https://nodejs.org/en/)
 
 
-### 服务器
-
 **NanoIconPack** 是一个开源的图标包APP模版（[去查看](https://github.com/by-syk/NanoIconPack)），拥有一个轻量的服务器，提供图标申请和申请统计两大服务。
 
 服务器由神奇的 **[Node.js®](https://nodejs.org/en/)** 驱动，够简单、够轻量。如果您有兴趣，欢迎和我一起改进。
@@ -27,7 +25,7 @@ npm install log4j
 ```
 
 
-在建好库表后（[库表结构](https://github.com/by-syk/NanoIconPackServer/blob/master/dll/sql.dll)），启动测试：
+在建好库表后（[库表结构](https://github.com/by-syk/NanoIconPackServer/blob/master/dll/sql.dll)），启动：
 
 ```
 cd /home/NanoIconPackServer/src
@@ -61,7 +59,8 @@ http://nano.by-syk.com
 
 [![NanoConsole](art/nano_console.png)](http://nano.by-syk.com)
 
-提供的服务包括：
+
+控制台为图标包作者而开发，提供的服务包括：
 
 + APP代码速查
   
