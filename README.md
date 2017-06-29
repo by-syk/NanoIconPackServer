@@ -36,21 +36,16 @@ forever start nano8082.js
 
 > 项目目录结构：
 > 
+> ```
 > NanoIconPackServer/
->
 >   ├ src/        // 接口部分
->
 >   ├ pages/      // 网页部分
->
 >   ├ art/        // 图片（运行无关）
->
 >   ├ dll/        // 库表（运行无关）
->
 >   ├ .gitignore  // （运行无关）
->
 >   ├ LICENSE     // （运行无关）
->
 >   └ README.md   // （运行无关）
+> ```
 
 
 ### 图标包为什么需要服务器？
