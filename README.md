@@ -1,5 +1,8 @@
 # NanoIconPack 服务端
 
+[![Server Of](https://img.shields.io/badge/NanoIconPack-green.svg)](https://github.com/by-syk/NanoIconPack)
+[![Powered By](https://img.shields.io/badge/Node.js-brightgreen.svg)](https://nodejs.org/en/)
+
 
 ### 服务器
 
