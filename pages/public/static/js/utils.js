@@ -14,25 +14,6 @@
  * limitations under the License.
  */
 
-// 复制文本内容到剪切板
-function copy2ClipboardT(text) {
-  //var $temp = $("<input>"); // 不支持换行符
-  var $temp = $("<textarea>");
-  $("body").append($temp);
-  $temp.val(text).select();
-  document.execCommand("copy");
-  $temp.remove();
-}
-
-// 从目标组件读取文本内容并复制到剪切板
-function copy2ClipboardE(element) {
-  var text = $(element).text();
-  if (!text) { // <textarea />
-    text = $(element).val();
-  }
-  copy2ClipboardT(text);
-}
-
 // APP英文名代码化
 function codeAppName(name) {
   if (!name) {

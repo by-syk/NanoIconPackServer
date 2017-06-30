@@ -20,10 +20,12 @@
 <meta content="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=Edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- (for Bootstrap) 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="keyword" content="NanoIconPack" />
 <meta name="description" content="NanoIconPack Console" />
+<meta name="theme-color" content="#607D8B"><!-- for Chrome for Android -->
 <title>NanoConsole</title>
 
 <!-- ICON -->
@@ -31,6 +33,7 @@
 <link rel="shortcut icon" href="../static/imgs/favicon.ico">-->
 <link rel="icon" type="image/png" href="../static/imgs/favicon-32.png" sizes="32x32">
 <link rel="icon" type="image/png" href="../static/imgs/favicon-96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="../static/imgs/favicon-192.png" sizes="192x192"><!-- for Chrome for Android -->
 
 <!-- Bootstrap -->
 <link rel="stylesheet" href="../static/css/bootstrap-3.3.7.min.css">
@@ -42,10 +45,19 @@
 <script src="../static/js/jquery-3.2.1.min.js"></script>
 <!-- Bootstrap -->
 <script src="../static/js/bootstrap-3.3.7.min.js"></script>
-<script src="../static/js/utils.js?v=17061700"></script>
+<script src="../static/js/jquery.copy.js?v=1.1.0"></script>
 
 <script type="text/javascript">
 $(document).ready(function() {
+  /*$('#donateDlg').on('shown.bs.modal', function () {
+    $("#donateDesc").typed({
+      strings: ["目前 NanoIconPack 服务器由我个人维护并持续为接入的用户提供服务，^1000尚无任何盈利。^1000如果您有所受益，不妨与我分担服务器费用。^1000谢谢！"],
+      contentType: 'text',
+      showCursor: false,
+      typeSpeed: 40,
+      startDelay: 200
+    });
+  });*/
   $.get("/sum", function(data) {
     if (data && data.status == 0) {
       $("#iIconPacks").replaceWith("<span class=\"badge\">" + data.result.iconPacks + "</span>");
@@ -81,7 +93,7 @@ function showDonate() {
       <li><a href="./mark">申请管理</a></li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
-      <li><a href="https://github.com/by-syk/NanoIconPack" target="_blank">GitHub</a></li>
+      <li><a href="https://github.com/by-syk/NanoIconPackServer" target="_blank">GitHub</a></li>
       <li><a href="javascript:void(0);" onclick="showDonate()">捐赠支持</a></li>
     </ul>
   </div>
@@ -114,7 +126,7 @@ function showDonate() {
   </div>
   <div class="modal-body">
     <p>目前 NanoIconPack 服务器由我个人维护并持续为接入的用户提供服务，尚无任何盈利。如果您有所受益，不妨与我分担服务器费用。谢谢！</p>
-    <p>我的支付宝：<a href="javascript:void(0);" onclick="copy2ClipboardT('By_syk@163.com')">By_syk@163.com <i class="fa fa-clone"></i></a></p>
+    <p>我的支付宝：<a href="javascript:void(0);" onclick="copyText('By_syk@163.com')">By_syk@163.com <i class="fa fa-clone"></i></a></p>
     <!--<hr />
     <div class="row">
       <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12"><div class="text-center">
