@@ -184,7 +184,7 @@ function undoMark(trObj, iconPack, key, pkg, launcher) {
 function clear(str) {
   $("#codeTbody").empty();
 }
-function generateStatusCode(icon, str) {
+function generateStatusCode(str) {
   var rows = $("#codeTheadTr").children().length;
   return "<tr><td>&nbsp;</td><td colspan=\"" + (rows - 1) + "\">" + str + "</td></tr>";
 }
