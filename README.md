@@ -81,7 +81,7 @@ http://nano.by-syk.com
 
   [![NanoMark](art/nano_mark.png)](http://nano.by-syk.com/page/mark)
 
-> 前端页面基于 [**Bootstrap**](http://v3.bootcss.com/)、[**jQuery**](http://jquery.com/) 开发。
+> 前端页面由 [**Bootstrap**](http://v3.bootcss.com/) 和 [**jQuery**](http://jquery.com/) 框架驱动。
 
 
 ### License
