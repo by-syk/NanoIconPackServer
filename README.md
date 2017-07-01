@@ -4,7 +4,7 @@
 [![Powered By](https://img.shields.io/badge/powered%20by-Node.js-green.svg)](https://nodejs.org/en/)
 
 
-**NanoIconPack** 是一个开源的图标包APP模版（[去查看](https://github.com/by-syk/NanoIconPack)），拥有一个轻量的服务器，提供图标申请和申请统计两大服务。
+这是 **NanoIconPack** 的服务端代码。NanoIconPack 是一个开源的图标包APP模版（[去查看](https://github.com/by-syk/NanoIconPack)），拥有一个轻量的服务器，提供图标申请和申请统计两大服务。
 
 服务器由神奇的 **[Node.js®](https://nodejs.org/en/)** 驱动，够简单、够轻量。如果您有兴趣，欢迎和我一起改进。
 
