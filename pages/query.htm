@@ -44,7 +44,7 @@
 <!-- Bootstrap -->
 <script src="../static/js/bootstrap-3.3.7.min.js"></script>
 <script src="../static/js/jquery.toaster.js"></script>
-<script src="../static/js/jquery.copy.js?v=1.1.0"></script>
+<script src="../static/js/jquery.copy.js?v=1.1.1"></script>
 <script src="../static/js/utils.js?v=17061700"></script>
 
 <script type="text/javascript">
@@ -61,7 +61,7 @@ $(document).ready(function() {
     }
     lastQueryTime = Date.now();
 
-    updateStatus("<i class=\"fa fa-spinner fa-spin\"></i> 检索中&#8230;");
+    updateStatus("<i class=\"fa fa-spinner fa-spin fa-fw\"></i> 检索中&#8230;");
     $.get("/code/" + keyword, function(data) {
       fill(data);
     });
@@ -142,12 +142,14 @@ function fill(data) {
   $("#codeTbody tr td button").click(function() {
     var tds = $(this).parent().parent().children();
     //showCode(tds);
-    $.copy(generateCode(tds));
-    $.toaster({
-      title: "提示",
-      message: "代码已复制到剪切板",
-      priority: 'success'
-    });
+    var ok = $.copy(generateCode(tds));
+    if (ok) {
+      $.toaster({
+        title: "提示",
+        message: "代码已复制到剪切板",
+        priority: 'success'
+      });
+    }
     return false; // 阻止继续向下分发点击事件
   });
   $("#codeTbody tr").click(function() {
@@ -179,10 +181,6 @@ function showCode(tds) {
   $("#taCode").val(code);
   $("#codeDlg").modal("show");
 }
-// 显示捐赠二维码对话框
-function showDonate() {
-  $("#donateDlg").modal("show");
-}
 </script>
 </head>
 
@@ -205,12 +203,18 @@ function showDonate() {
       <li><a href="./base">常用APP代码</a></li>
       <li><a href="./stats">图标包统计</a></li>
       <li><a href="./mark">申请管理</a></li>
+      <li class="dropdown">
+        <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button">配置工具 <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          <li><a href="./appfilter">优化 appfilter.xml</a></li>
+        </ul>
+      </li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
       <li><a class="visible-xs-block" href="https://github.com/by-syk/NanoIconPackServer" target="_blank">GitHub</a></li>
-      <li><a class="visible-xs-block" href="javascript:void(0);" onclick="showDonate()">捐赠支持</a></li>
+      <li><a class="visible-xs-block" href="javascript:void(0);" onclick="$('#donateDlg').modal('show')">捐赠支持</a></li>
       <li><a class="hidden-xs" href="https://github.com/by-syk/NanoIconPackServer" target="_blank" title="GitHub">&nbsp;<i class="fa fa-github fa-lg"></i>&nbsp;</a></li>
-      <li><a class="hidden-xs" href="javascript:void(0);" onclick="showDonate()" title="捐赠支持">&nbsp;<i class="fa fa-credit-card fa-lg"></i>&nbsp;</a></li>
+      <li><a class="hidden-xs" href="javascript:void(0);" onclick="$('#donateDlg').modal('show')" title="捐赠支持">&nbsp;<i class="fa fa-credit-card fa-lg"></i>&nbsp;</a></li>
     </ul>
   </div>
 </div>
@@ -222,6 +226,7 @@ function showDonate() {
     <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span></button>
     <i class="fa fa-info-circle"></i> 搜索获取目标APP的<u>包名+启动项</u>代码，用于<u>appfilter.xml</u>。
   </div>
+
   <div class="input-group">
     <span class="input-group-btn">
       <!--<span class="glyphicon glyphicon-search" aria-hidden="true">-->
@@ -232,15 +237,15 @@ function showDonate() {
   <br />
   <div class="table-responsive"><table class="table table-striped table-hover">
     <thead><tr id="codeTheadTr">
-    <th>&nbsp;</th>
-    <th>APP名</th>
-    <th>APP英文名</th>
-    <th>包名</th>
-    <th>启动项</th>
-    <th>申请次</th>
+      <th>&nbsp;</th>
+      <th>APP名</th>
+      <th>APP英文名</th>
+      <th>包名</th>
+      <th>启动项</th>
+      <th>申请次</th>
     </tr></thead>
     <tbody id="codeTbody">
-    <!--<tr><td colspan="6">...</td></tr>-->
+      <!--<tr><td colspan="6">...</td></tr>-->
     </tbody>
   </table></div>
   <div id="mobileFlag" class="visible-xs-block"></div>
@@ -256,7 +261,7 @@ function showDonate() {
     <h4 class="modal-title">代码</h4>
   </div>
   <div class="modal-body">
-    <textarea id="taCode" class="form-control" rows="6" style="resize: none"></textarea>
+    <textarea id="taCode" class="form-control" rows="6" style="font-family: monospace; resize: none;"></textarea>
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-primary" onclick="copyText($('#taCode'))" data-dismiss="modal">复制</button>

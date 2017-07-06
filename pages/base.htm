@@ -46,7 +46,7 @@
 <!--<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>-->
 <!-- <pre class="prettyprint lang-java"></pre> -->
 <script src="../static/js/jquery.toaster.js"></script>
-<script src="../static/js/jquery.copy.js?v=1.1.0"></script>
+<script src="../static/js/jquery.copy.js?v=1.1.1"></script>
 
 <script type="text/javascript">
 var lastQueryTime = 0;
@@ -55,12 +55,14 @@ $(document).ready(function() {
     fill(data);
   });
   $("#btCopy").click(function() {
-    $.copy($("#preCode"));
-    $.toaster({
-      title: "提示",
-      message: "代码已复制到剪切板",
-      priority: 'success'
-    });
+    var ok = $.copy($("#preCode"));
+    if (ok) {
+      $.toaster({
+        title: "提示",
+        message: "代码已复制到剪切板",
+        priority: 'success'
+      });
+    }
   });
   $("#btEdit").click(function() {
     switchCodeShow(true);
@@ -112,10 +114,6 @@ function switchCodeShow(editable) {
     $("#editCodeDiv").collapse("hide");
   }
 }
-// 显示捐赠二维码对话框
-function showDonate() {
-  $("#donateDlg").modal("show");
-}
 </script>
 </head>
 
@@ -138,12 +136,18 @@ function showDonate() {
       <li class="active"><a href="./base"><i class="fa fa-book fa-fw" aria-hidden="true"></i> 常用APP代码</a></li>
       <li><a href="./stats">图标包统计</a></li>
       <li><a href="./mark">申请管理</a></li>
+      <li class="dropdown">
+        <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button">配置工具 <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          <li><a href="./appfilter">优化 appfilter.xml</a></li>
+        </ul>
+      </li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
       <li><a class="visible-xs-block" href="https://github.com/by-syk/NanoIconPackServer" target="_blank">GitHub</a></li>
-      <li><a class="visible-xs-block" href="javascript:void(0);" onclick="showDonate()">捐赠支持</a></li>
+      <li><a class="visible-xs-block" href="javascript:void(0);" onclick="$('#donateDlg').modal('show')">捐赠支持</a></li>
       <li><a class="hidden-xs" href="https://github.com/by-syk/NanoIconPackServer" target="_blank" title="GitHub">&nbsp;<i class="fa fa-github fa-lg"></i>&nbsp;</a></li>
-      <li><a class="hidden-xs" href="javascript:void(0);" onclick="showDonate()" title="捐赠支持">&nbsp;<i class="fa fa-credit-card fa-lg"></i>&nbsp;</a></li>
+      <li><a class="hidden-xs" href="javascript:void(0);" onclick="$('#donateDlg').modal('show')" title="捐赠支持">&nbsp;<i class="fa fa-credit-card fa-lg"></i>&nbsp;</a></li>
     </ul>
   </div>
 </div>
@@ -183,12 +187,12 @@ function showDonate() {
   </div>
   <!-- 可编辑代码展示 -->
   <div id="editCodeDiv" class="collapse">
-    <textarea id="taCode" class="form-control" rows="16" style="resize: none"></textarea>
+    <textarea id="taCode" class="form-control" rows="16" style="font-family: monospace; resize: none;"></textarea>
   </div>
   <br />
   <!--<span class="glyphicon glyphicon-flag" aria-hidden="true">-->
   <p style="color:grey"><i class="fa fa-flag" aria-hidden="true"></i>
-    如果您有所补充，欢迎<a href="https://github.com/by-syk/NanoIconPack/issues" target="_blank">在GitHub上提交issue</a>或<a href="mailto:By_syk@163.com">发送邮件告知我</a>，谢谢。
+    如果您有所补充，欢迎<a href="https://github.com/by-syk/NanoIconPackServer/issues" target="_blank">在 GitHub 上提交 issue</a> 或<a href="mailto:By_syk@163.com">发送邮件告知我</a>，谢谢。
   </p>
 </div>
 

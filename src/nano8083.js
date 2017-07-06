@@ -656,6 +656,12 @@ app.get('/page/mark', function(req, res) {
   res.sendFile(path.resolve('../pages/mark.htm'));
 });
 
+// 页面：优化 appfilter
+app.get('/page/appfilter', function(req, res) {
+  logger.info('GET /page/appfilter');
+  res.sendFile(path.resolve('../pages/appfilter.htm'));
+});
+
 
 // ======================================= PAGE BLOCK END ======================================= //
 

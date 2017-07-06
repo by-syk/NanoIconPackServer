@@ -26,7 +26,7 @@
 <meta name="keyword" content="NanoIconPack" />
 <meta name="description" content="NanoIconPack Console" />
 <meta name="theme-color" content="#607D8B"><!-- for Chrome for Android -->
-<title>NanoConsole</title>
+<title>NanoAppfilter</title>
 
 <!-- ICON -->
 <!--<link rel="icon" href="../static/imgs/favicon.ico">
@@ -46,27 +46,82 @@
 <!-- Bootstrap -->
 <script src="../static/js/bootstrap-3.3.7.min.js"></script>
 <script src="../static/js/jquery.copy.js?v=1.1.1"></script>
+<!-- Bootstrap FileStyle http://markusslima.github.io/bootstrap-filestyle -->
+<script src="../static/js/bootstrap-filestyle.js"></script>
 
 <script type="text/javascript">
-console.log("%cNanoIconPack Console%c\nhttps://github.com/by-syk/NanoIconPackServer\n%cCopyright © 2017 By_syk. All rights reserved.%c\n\nWelcome. I'm %cBy_syk%c and I run the ugly system.\nAny BUGs, mistakes, suggestion or confusion, send me an E-mail. Thank you!\n\n> %cBy_syk@163.com", "font-weight: bold; font-size: large", "", "color: darkgrey", "", "font-weight: bold", "", "color: red");
 $(document).ready(function() {
-  /*$('#donateDlg').on('shown.bs.modal', function () {
-    $("#donateDesc").typed({
-      strings: ["目前 NanoIconPack 服务器由我个人维护并持续为接入的用户提供服务，^1000尚无任何盈利。^1000如果您有所受益，不妨与我分担服务器费用。^1000谢谢！"],
-      contentType: 'text',
-      showCursor: false,
-      typeSpeed: 40,
-      startDelay: 200
-    });
-  });*/
-  $.get("/sum", function(data) {
-    if (data && data.status == 0) {
-      $("#iIconPacks").replaceWith("<span class=\"badge\">" + data.result.iconPacks + "</span>");
-      $("#iApps").replaceWith("<span class=\"badge\">" + data.result.apps + "</span>");
-      $("#iReqTimes").replaceWith("<span class=\"badge\">" + data.result.reqTimes + "</span>");
+  //$("#inputFile").prop("files", e.originalEvent.dataTransfer.files);
+});
+function handleFiles(files) {
+  if (files.length == 0) {
+    return;
+  }
+  var file = files[0];
+  if (file.type != "text/xml") {
+    $("#fileHelp").removeClass("hidden");
+    return;
+  }
+  $("#fileHelp").addClass("hidden");
+  var reader = new FileReader();
+  reader.onload = function() {
+    parseAppfilter(this.result);
+  };
+  reader.readAsText(file);
+  $("#itemsTbody").html("<i class=\"fa fa-spinner fa-spin fa-fw\"></i> 加载中&#8230;");
+}
+function parseAppfilter(text) {
+  var reItems = {};
+  var xmlDoc = $.parseXML(text);
+  $(xmlDoc).find("item").each(function(i) {
+    var component = $(this).attr("component");
+    var drawable = $(this).attr("drawable");
+    var innerComponent = purifyComponent(component);
+    if (!innerComponent || !drawable) {
+      return;
+    }
+    if (!reItems[innerComponent]) {
+      reItems[innerComponent] = {
+        icons: [drawable]
+      };
+    } else {
+      reItems[innerComponent]["icons"].push(drawable);
     }
   });
-});
+  var code = "";
+  for (var key in reItems) {
+    var item = reItems[key];
+    var icons = item.icons;
+    if (icons.length == 1) {
+      continue;
+    }
+    code += "<tr><td>";
+    code += "<code>" + key + "</code>";
+    code += "<br />";
+    for (var i in icons) {
+      code += "<label class=\"radio-inline\">";
+      code += "<input type=\"radio\" name=\"" + key + "\" value=\"\"";
+      if (i == 0) {
+        code += " checked=\"checked\"";
+      }
+      code += "> " + icons[i];
+      code += "</label>";
+    }
+    code += "</td></tr>";
+  }
+  if (code.length == 0) {
+    code = "<tr><td><i class=\"fa fa-smile-o fa-fw\"></i> 无冗余项</td></tr>"
+  }
+  $("#itemsTbody").html(code);
+  $("#preCode").text(text);
+}
+function purifyComponent(component) {
+  var patt = /^ComponentInfo\{(.+?)\}$/.exec(component);
+  if (patt) {
+    return patt[1];
+  }
+  return "";
+}
 </script>
 </head>
 
@@ -88,10 +143,10 @@ $(document).ready(function() {
       <li><a href="./base">常用APP代码</a></li>
       <li><a href="./stats">图标包统计</a></li>
       <li><a href="./mark">申请管理</a></li>
-      <li class="dropdown">
-        <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button">配置工具 <span class="caret"></span></a>
+      <li class="dropdown active">
+        <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="fa fa-flask fa-fw" aria-hidden="true"></i> 配置工具 <span class="caret"></span></a>
         <ul class="dropdown-menu">
-          <li><a href="./appfilter">优化 appfilter.xml</a></li>
+          <li><a href="./appfilter"><i class="fa fa-hand-o-right fa-fw" aria-hidden="true"></i> 优化 appfilter.xml</a></li>
         </ul>
       </li>
     </ul>
@@ -106,18 +161,34 @@ $(document).ready(function() {
 </nav>
 
 <div class="container">
-  <div class="jumbotron">
-    <div class="container">
-      <h1>Welcome</h1>
-      <p>NanoIconPack 微控制台</p>
+  <div class="alert alert-info alert-dismissible" role="alert">
+    <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span></button>
+    <i class="fa fa-info-circle"></i> 检查<u>appfilter.xml</u>配置，发现冗余项。
+  </div>
+
+  <div class="form-group">
+    <label for="inputFile"><i class="fa fa-file-code-o fa-fw"></i> appfilter.xml</label>
+    <!-- 加载页面时不闪现原文件选择器样式 style="display: none;" -->
+    <input id="inputFile" type="file" class="filestyle" data-icon="false" data-buttonText="选择文件" onchange="handleFiles(this.files)" style="display: none;">
+    <p id="fileHelp" class="help-block hidden">出错。请选择有效的 XML 文件。</p>
+  </div>
+  
+  <div class="table-responsive"><table class="table table-striped">
+    <thead><tr>
+      <th>冗余项</th>
+    </tr></thead>
+    <tbody id="itemsTbody"></tbody>
+  </table></div>
+
+  <h4>代码</h4>
+  <pre id="preCode"></pre>
+
+  <!--<br />
+  <div class="rows">
+    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-8 col-lg-offset-4 col-md-offset-4 col-sm-offset-3 col-xs-offset-2">
+      <button type="button" class="btn btn-lg btn-success btn-block">下载新文件</button>
     </div>
-  </div>
-  <div class="alert alert-info" role="alert">
-    <i class="fa fa-database" aria-hidden="true"></i> <strong>数据量</strong>
-    <br />接入图标包：<i id="iIconPacks" class="fa fa-spinner fa-spin"></i>
-    |&nbsp;申请APP：<i id="iApps" class="fa fa-spinner fa-spin"></i>
-    |&nbsp;申请次：<i id="iReqTimes" class="fa fa-spinner fa-spin"></i>
-  </div>
+  </div>-->
 </div>
 
 <div id="donateDlg" class="modal fade">
@@ -136,15 +207,6 @@ $(document).ready(function() {
     <br />
     <p>目前 NanoIconPack 服务器由我个人维护并持续为接入的用户提供服务，尚无任何盈利。如果您有所受益，不妨与我分担服务器费用。谢谢！</p>
     <p>我的支付宝：<a href="javascript:void(0);" onclick="copyText('By_syk@163.com')">By_syk@163.com <i class="fa fa-clone"></i></a></p>
-    <!--<hr />
-    <div class="row">
-      <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12"><div class="text-center">
-        <img src="../static/imgs/qrcode_donate_By_syk_alipay_2.png" class="img-responsive img-thumbnail" height="200" width="200" alt="支付宝扫码捐赠" title="支付宝扫码捐赠">
-      </div></div>
-      <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 text-center"><div class="text-center">
-        <img src="../static/imgs/qrcode_donate_By_syk_wechat_2.png" class="img-responsive img-thumbnail" height="200" width="200" alt="微信扫码捐赠" title="微信扫码捐赠">
-      </div></div>
-    </div>-->
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>

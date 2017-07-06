@@ -1,5 +1,5 @@
 /*!
- * jQuery Copy Plugin v1.1.0
+ * jQuery Copy Plugin v1.1.1
  * https://github.com/by-syk/jquery-copy
  *
  * Copyright 2017 By_syk
@@ -22,15 +22,18 @@ function copyText(obj) {
     if (obj.nodeType) { // DOM node
       obj = $(obj); // to jQuery object
     }
-    try {
+    if (obj instanceof $) {
+      if (!obj.length) { // nonexistent
+        return false;
+      }
       text = obj.text();
       if (!text) { // Maybe <textarea />
         text = obj.val();
       }
-    } catch (err) { // as JSON
+    } else { // as JSON
       text = JSON.stringify(obj);
     }
-  } else {
+  } else { // boolean, number, string
     text = obj;
   }
   //var $temp = $('<input>'); // Line feed is not supported

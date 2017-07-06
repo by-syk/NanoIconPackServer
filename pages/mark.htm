@@ -43,9 +43,9 @@
 <script src="../static/js/jquery-3.2.1.min.js"></script>
 <!-- Bootstrap -->
 <script src="../static/js/bootstrap-3.3.7.min.js"></script>
-<script src="../static/js/jquery.cookie.js"></script>
+<script src="../static/js/js.cookie.js"></script>
 <script src="../static/js/jquery.toaster.js"></script>
-<script src="../static/js/jquery.copy.js?v=1.1.0"></script>
+<script src="../static/js/jquery.copy.js?v=1.1.1"></script>
 
 <script type="text/javascript">
 var configInited = false;
@@ -56,7 +56,7 @@ $(document).ready(function() {
       return;
     }
     configInited = true;
-    $("#inputKey").val($.cookie("markKey"));
+    $("#inputKey").val(Cookies.get("markKey"));
     $.get("/iconpacks", function(data) {
       if (data && data.status == 0) {
         fillIconPacks(data.result);
@@ -80,29 +80,29 @@ $(document).ready(function() {
       return;
     }
     $("#collapseConfig").collapse("hide");
-    $.cookie("markIp", iconPack);
-    $.cookie("markKey", key);
-    loadData(iconPack, key, $.cookie("markCate"));
+    Cookies.set("markIp", iconPack);
+    Cookies.set("markKey", key);
+    loadData(iconPack, key, Cookies.get("markCate"));
   });
-  switchCate($.cookie("markCate"));
+  switchCate(Cookies.get("markCate"));
   $("#btGroupShow button").click(function() {
-    var cookieCate = $.cookie("markCate");
+    var cookieCate = Cookies.get("markCate");
     var cate = $(this).attr("data-id");
     if (cate == cookieCate) {
       return;
     }
-    $.cookie("markCate", cate);
+    Cookies.set("markCate", cate);
     switchCate(cate);
-    loadData($.cookie("markIp"), $.cookie("markKey"), cate);
+    loadData(Cookies.get("markIp"), Cookies.get("markKey"), cate);
   });
-  if ($.cookie("markIp") && $.cookie("markKey")) {
-    loadData($.cookie("markIp"), $.cookie("markKey"), $.cookie("markCate"));
+  if (Cookies.get("markIp") && Cookies.get("markKey")) {
+    loadData(Cookies.get("markIp"), Cookies.get("markKey"), Cookies.get("markCate"));
   } else {
     $("#collapseConfig").collapse("show");
   }
 });
 function loadData(iconPack, key, cate) {
-  updateStatus("<i class=\"fa fa-spinner fa-spin\"></i> 加载中&#8230;");
+  updateStatus("<i class=\"fa fa-spinner fa-spin fa-fw\"></i> 加载中&#8230;");
   if (cate == "marked") {
     $.get("/reqtopfiltered2/" + iconPack + "/" + key, function(data) {
       if (data && data.status == 0) {
@@ -266,14 +266,14 @@ function fill(data, cate) {
     var index = parseInt($(this).children().eq(0).text()) - 1;
     var item = dataArr[index];
     if ($(this).find("i.fa").hasClass("fa-check")) {
-      mark($(this), $.cookie("markIp"), $.cookie("markKey"), item.pkg, item.launcher);
+      mark($(this), Cookies.get("markIp"), Cookies.get("markKey"), item.pkg, item.launcher);
     } else {
-      undoMark($(this), $.cookie("markIp"), $.cookie("markKey"), item.pkg, item.launcher);
+      undoMark($(this), Cookies.get("markIp"), Cookies.get("markKey"), item.pkg, item.launcher);
     }
   });
 }
 function fillIconPacks(data) {
-  var cookieIp = $.cookie("markIp");
+  var cookieIp = Cookies.get("markIp");
   for (var i in data) {
     var ip = data[i].pkg;
     var item = ip;
@@ -287,10 +287,6 @@ function fillIconPacks(data) {
     code += ">" + item + "</option>";
     $("#selectIp").append(code);
   }
-}
-// 显示捐赠二维码对话框
-function showDonate() {
-  $("#donateDlg").modal("show");
 }
 </script>
 </head>
@@ -313,12 +309,18 @@ function showDonate() {
       <li><a href="./base">常用APP代码</a></li>
       <li><a href="./stats">图标包统计</a></li>
       <li class="active"><a href="./mark"><i class="fa fa-check-square-o fa-fw" aria-hidden="true"></i> 申请管理</a></li>
+      <li class="dropdown">
+        <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button">配置工具 <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          <li><a href="./appfilter">优化 appfilter.xml</a></li>
+        </ul>
+      </li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
       <li><a class="visible-xs-block" href="https://github.com/by-syk/NanoIconPackServer" target="_blank">GitHub</a></li>
-      <li><a class="visible-xs-block" href="javascript:void(0);" onclick="showDonate()">捐赠支持</a></li>
+      <li><a class="visible-xs-block" href="javascript:void(0);" onclick="$('#donateDlg').modal('show')">捐赠支持</a></li>
       <li><a class="hidden-xs" href="https://github.com/by-syk/NanoIconPackServer" target="_blank" title="GitHub">&nbsp;<i class="fa fa-github fa-lg"></i>&nbsp;</a></li>
-      <li><a class="hidden-xs" href="javascript:void(0);" onclick="showDonate()" title="捐赠支持">&nbsp;<i class="fa fa-credit-card fa-lg"></i>&nbsp;</a></li>
+      <li><a class="hidden-xs" href="javascript:void(0);" onclick="$('#donateDlg').modal('show')" title="捐赠支持">&nbsp;<i class="fa fa-credit-card fa-lg"></i>&nbsp;</a></li>
     </ul>
   </div>
 </div>
