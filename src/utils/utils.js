@@ -30,8 +30,8 @@ exports.sqlCmds = {
   reqFilter: 'INSERT IGNORE INTO req_filter(icon_pack, user, pkg, launcher) VALUES(?, ?, ?, ?)',
   reqUndoFilter: 'DELETE FROM req_filter WHERE icon_pack = ? AND user = ? AND pkg = ?',
   reqUndoFilter2: 'DELETE FROM req_filter WHERE icon_pack = ? AND user = ? AND pkg = ? AND launcher = ?',
-  queryByPkg: 'SELECT label, label_en AS labelEn, pkg, launcher, icon, COUNT(*) AS sum FROM req WHERE pkg = ? GROUP BY label, label_en, launcher',
-  queryByLabel: 'SELECT label, label_en AS labelEn, pkg, launcher, icon, COUNT(*) AS sum FROM req WHERE label LIKE ? OR label_en LIKE ? GROUP BY label, label_en, launcher LIMIT 128',
+  queryByPkg: 'SELECT label, label_en AS labelEn, pkg, launcher, icon, COUNT(*) AS sum FROM req WHERE pkg = ? GROUP BY label, label_en, pkg, launcher',
+  queryByLabel: 'SELECT label, label_en AS labelEn, pkg, launcher, icon, COUNT(*) AS sum FROM req WHERE label LIKE ? OR label_en LIKE ? GROUP BY label, label_en, pkg, launcher LIMIT 128',
   queryByPkgLauncher: 'SELECT label, label_en AS labelEn, pkg, launcher, icon FROM req WHERE pkg = ? AND launcher = ? GROUP BY label, label_en',
   sumReqTimes: 'SELECT COUNT(*) AS sum FROM req',
   sumApps: 'SELECT COUNT(*) AS sum FROM (SELECT pkg FROM req GROUP BY pkg, launcher) AS pkgs',
@@ -83,7 +83,7 @@ exports.getCodeLite = function(pkg, launcher, icon) {
 };
 
 // JSON 排序
-exports.sortBy = function(filed, rev, primer) {
+/*exports.sortBy = function(filed, rev, primer) {
   rev = (rev) ? -1 : 1;
   return function (a, b) {
     a = a[filed];
@@ -96,7 +96,7 @@ exports.sortBy = function(filed, rev, primer) {
     if (a > b) { return rev * 1; }
     return 1;
   }
-};
+};*/
 
 // 解析客户端IP
 /*exports.getClientIp = function(req) {
