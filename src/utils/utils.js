@@ -44,9 +44,9 @@ exports.sqlCmds = {
   queryIpByIp: 'SELECT label, pkg FROM icon_pack WHERE pkg = ?',
   queryIpByLabel: 'SELECT label, pkg FROM icon_pack WHERE label LIKE ? OR label_en LIKE ?',
   ip: 'SELECT ips.label, pkgs.pkg FROM (SELECT icon_pack AS pkg, COUNT(*) AS sum FROM req GROUP BY icon_pack HAVING sum > 128 ORDER BY sum DESC) AS pkgs LEFT JOIN icon_pack AS ips ON pkgs.pkg = ips.pkg',
-  donates: 'SELECT id, money, donator, DATE_FORMAT(date, \'%Y%m%d\') AS date FROM donate WHERE icon_pack = ? AND user = ? ORDER BY date DESC',
-  addDonate: 'INSERT INTO donate(id, icon_pack, user, money, donator, date) VALUES(?, ?, ?, ?, ?, ?)',
-  removeDonate: 'DELETE FROM donate WHERE id = ?'
+  donates: 'SELECT id, money, donator, comment, DATE_FORMAT(date, \'%Y%m%d\') AS date FROM donate WHERE icon_pack = ? AND user = ? AND trash = 0 ORDER BY date DESC',
+  addDonate: 'INSERT INTO donate(id, icon_pack, user, money, donator, comment, date, add_ip) VALUES(?, ?, ?, ?, ?, ?, ?, ?)',
+  removeDonate: 'UPDATE donate SET trash = 1, del_ip = ? WHERE id = ?'
 };
 
 /*// 拼装APP代码
@@ -133,6 +133,13 @@ exports.getClientIp = function(req) {
     || req.socket.remoteAddress
     || req.connection.socket.remoteAddress;
 };*/
+
+// 解析客户端IP（经过 Nginx 代理）
+// nginx.conf:
+//   proxy_set_header  X-Real-IP  $remote_addr;
+exports.getRemoteIpViaNginx = function(expressReq) {
+  return expressReq.headers['x-real-ip'] || req.connection.remoteAddress;
+};
 
 // 拼装返回JSON数据
 exports.getResRes = function(status, msg, result) {

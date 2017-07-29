@@ -70,6 +70,9 @@ $(document).ready(function() {
   });
   $("#btInsert").click(function() {
     var iconPack = $("#selectIp").val();
+    if (!iconPack) {
+      return;
+    }
     var key = $("#inputKey").val().trim();
     if (!key) {
       $("#divKey").addClass("has-warning");
@@ -84,11 +87,27 @@ $(document).ready(function() {
       return;
     }
     var donator = $("#inputDonator").val().trim();
+    var comment = $("#inputComment").val().trim();
     var date = $("#inputDate").val().trim();
-    //$("#collapseInsert").collapse("hide");
     Cookies.set("markIp", iconPack, {expires: 365});
     Cookies.set("markKey", key, {expires: 365});
-    addDonate(iconPack, key, money, donator, date);
+    addDonate(iconPack, key, money, donator, comment, date);
+  });
+  $("#btRefresh").click(function() {
+    var iconPack = $("#selectIp").val();
+    if (!iconPack) {
+      return;
+    }
+    var key = $("#inputKey").val().trim();
+    if (!key) {
+      $("#divKey").addClass("has-warning");
+      $("#inputKey").focus();
+      return;
+    }
+    $("#collapseInsert").collapse("hide");
+    Cookies.set("markIp", iconPack, {expires: 365});
+    Cookies.set("markKey", key, {expires: 365});
+    loadData(iconPack, key, Cookies.get("donateSort"));
   });
   switchSort(Cookies.get("donateSort"));
   $("#btGroupSort button").click(function() {
@@ -116,14 +135,17 @@ function loadData(iconPack, key, sort) {
 function resetInsert() {
   $("#inputMoney").val("");
   $("#inputDonator").val("");
+  $("#inputComment").val("");
   $("#inputDate").val(formatDate(new Date(), "yyyy-MM-dd"));
+  $("#divKey").removeClass("has-warning");
   $("#divMoney").removeClass("has-warning");
 }
-function addDonate(iconPack, key, money, donator, date) {
+function addDonate(iconPack, key, money, donator, comment, date) {
   $("#btInsert").html("<i class=\"fa fa-spinner fa-spin fa-fw\"></i> 添加");
   $.post("/donate/" + iconPack + "/" + key, {
     money: money,
     donator: donator,
+    comment: comment,
     date: date
   }, function(data) {
     $("#btInsert").html("&nbsp;添加&nbsp;");
@@ -150,6 +172,11 @@ function removeDonate(trObj, id) {
     type: "DELETE",
     success: function(data) {
       if (data && data.status == 0) {
+        var total = parseFloat($("#totalMoney").text());
+        var removed = parseFloat(trObj.find(".badge").text())
+        if (total && removed) {
+          $("#totalMoney").text(total - removed);
+        }
         trObj.remove();
         $.toaster({
           title: "提示",
@@ -231,9 +258,13 @@ function fill(data, sort) {
   for (var i = 0; i < dataArr.length; ++i) {
     var item = dataArr[i];
     totalMoney += item.money;
-    var donator = item.donator ? item.donator : "&nbsp;"
-    var code = "<tr>";
-    code += "<td style=\"color: darkgrey\">" + (i + 1) + "</td>";
+    var donator = item.donator ? item.donator : "&nbsp;";
+    if (donator.indexOf("@") < 0) {
+      donator = "@" + donator;
+    }
+    var comment = item.comment ? item.comment : "&nbsp;";
+    var code = "<tr title=\"" + comment + "\">";
+    code += "<td style=\"color: darkgrey\">" + (dataArr.length - i) + "</td>";
     code += "<td>" + donator + "</td>";
     code += "<td><span class=\"badge\">" + item.money + "</span></td>";
     code += "<td>" + date(item.date) + "</td>";
@@ -301,7 +332,7 @@ function date(date) {
     </ul>
     <ul class="nav navbar-nav navbar-right">
       <li><a class="visible-xs-block" href="https://github.com/by-syk/NanoIconPackServer" target="_blank">GitHub</a></li>
-      <li><a class="hidden-xs" href="https://github.com/by-syk/NanoIconPackServer" target="_blank" title="GitHub">&nbsp;<i class="fa fa-github fa-lg"></i>&nbsp;</a></li>
+      <li><a class="hidden-xs" href="https://github.com/by-syk/NanoIconPackServer" target="_blank" title="去 GitHub 查看源码">&nbsp;<i class="fa fa-github fa-lg"></i>&nbsp;</a></li>
     </ul>
   </div>
 </div>
@@ -310,11 +341,11 @@ function date(date) {
 <div class="container">
   <div class="alert alert-info alert-dismissible" role="alert">
     <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span></button>
-    <i class="fa fa-info-circle"></i> 记录图标包的赞助者和收到的金额。
+    <i class="fa fa-info-circle"></i> 记录图标包的赞助者和收到的金额。如有记录，可在图标包APP中展示名单以感谢赞助者们。
   </div>
 
   <div class="jumbotron">
-    <h1 class="text-center"><small>￥</small><span id="totalMoney">0</span></h1>
+    <h1 class="text-center" title="总金额"><small>￥</small><span id="totalMoney">0</span></h1>
   </div>
 
   <div class="panel panel-primary">
@@ -340,32 +371,41 @@ function date(date) {
         </div>
         <hr />
         <div class="row">
-        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-        <div id="divMoney" class="form-group">
-          <div class="input-group">
-            <div class="input-group-addon">&nbsp;￥&nbsp;</div>
-            <input id="inputMoney" type="number" class="form-control">
+          <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+            <div id="divMoney" class="form-group">
+              <div class="input-group">
+                <div class="input-group-addon">&nbsp;￥&nbsp;</div>
+                <input id="inputMoney" type="number" class="form-control">
+              </div>
+            </div>
           </div>
-        </div>
-        </div>
-        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-        <div class="form-group">
-          <div class="input-group">
-            <div class="input-group-addon">赞助者</div>
-            <input id="inputDonator" type="text" class="form-control">
+          <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
+            <div class="form-group">
+              <div class="input-group">
+                <div class="input-group-addon">赞助者</div>
+                <input id="inputDonator" type="text" class="form-control">
+              </div>
+            </div>
           </div>
-        </div>
-        </div>
-        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-        <div class="form-group">
-          <div class="input-group">
-            <div class="input-group-addon">日期</div>
-            <input id="inputDate" type="date" class="form-control">
+          <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+            <div class="form-group">
+              <div class="input-group">
+                <div class="input-group-addon">注释</div>
+                <input id="inputComment" type="text" class="form-control">
+              </div>
+            </div>
           </div>
-        </div>
-        </div>
+          <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+            <div class="form-group">
+              <div class="input-group">
+                <div class="input-group-addon">日期</div>
+                <input id="inputDate" type="date" class="form-control">
+              </div>
+            </div>
+          </div>
         </div>
         <div class="text-right">
+          <button id="btRefresh" type="button" class="btn btn-default btn-link">&nbsp;仅刷新&nbsp;</button>
           <button id="btInsert" type="button" class="btn btn-primary">&nbsp;添加&nbsp;</button>
         </div>
       </div>
@@ -373,8 +413,8 @@ function date(date) {
   </div>
 
   <div class="text-center"><div id="btGroupSort" class="btn-group" role="group">
-    <button id="btSortDate" type="button" class="btn btn-default" data-id="date"><i class="fa fa-sort-amount-desc hidden"></i> 日期</button>
-    <button id="btSortMoney" type="button" class="btn btn-default" data-id="money"><i class="fa fa-sort-amount-desc hidden"></i> 金额</button>
+    <button id="btSortDate" type="button" class="btn btn-default" data-id="date" title="按日期降序排序"><i class="fa fa-sort-amount-desc hidden"></i> 日期</button>
+    <button id="btSortMoney" type="button" class="btn btn-default" data-id="money" title="按金额降序排序"><i class="fa fa-sort-amount-desc hidden"></i> 金额</button>
   </div></div>
   <br />
 

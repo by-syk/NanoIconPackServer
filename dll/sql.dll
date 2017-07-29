@@ -83,6 +83,30 @@ CREATE TABLE icon_pack(
   evil TINYINT(1) DEFAULT 0
 ) ENGINE = InnoDB;
 
+-- 赞助记录
+CREATE TABLE donate(
+  -- 记录ID
+  id CHAR(32) PRIMARY KEY,
+  -- 归属图标包包名
+  icon_pack VARCHAR(64),
+  -- 用户
+  user VARCHAR(64),
+  -- 赞助金额
+  money FLOAT NOT NULL DEFAULT 0,
+  -- 赞助者
+  donator VARCHAR(64),
+  -- 注释
+  comment VARCHAR(128),
+  -- 赞助日期
+  date DATE,
+  -- 标记已删除
+  trash TINYINT(1) DEFAULT 0,
+  -- 记录者IP
+  add_ip CHAR(15),
+  -- 删除者IP
+  del_ip CHAR(15)
+);
+
 -- 图标评分（TODO）
 CREATE TABLE score(
   -- 图标包包名
@@ -96,20 +120,4 @@ CREATE TABLE score(
   -- 评分时间
   time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY(icon_pack, icon_md5, device_id)
-);
-
--- 赞助记录（TODO）
-CREATE TABLE donate(
-  -- 记录ID
-  id CHAR(32) PRIMARY KEY,
-  -- 归属图标包包名
-  icon_pack VARCHAR(64),
-  -- 用户
-  user VARCHAR(64),
-  -- 赞助金额
-  money FLOAT NOT NULL DEFAULT 0,
-  -- 赞助者
-  donator VARCHAR(64),
-  -- 赞助日期
-  date DATE
 );

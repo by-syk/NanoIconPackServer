@@ -575,12 +575,17 @@ app.post('/donate/:ip([A-Za-z\d\._]+)/:user', function(req, res) {
   if (!donator) {
     donator = null;
   }
+  var comment = req.body.comment;
+  if (!comment) {
+    comment = null;
+  }
   var date = req.body.date;
   if (!date) {
     date = null;
   }
   var id = uuid();
-  var sqlOptions = [id, iconPack, user, money, donator, date];
+  var ip = utils.getRemoteIpViaNginx(req);
+  var sqlOptions = [id, iconPack, user, money, donator, comment, date, ip];
   query(utils.sqlCmds.addDonate, sqlOptions, function(err, rows) {
     if (err) {
       logger.warn(err);
@@ -600,7 +605,8 @@ app.delete('/donate', function(req, res) {
     res.jsonp(utils.getResRes(2));
     return;
   }
-  var sqlOptions = [id];
+  var ip = utils.getRemoteIpViaNginx(req);
+  var sqlOptions = [ip, id];
   query(utils.sqlCmds.removeDonate, sqlOptions, function(err, rows) {
     if (err) {
       logger.warn(err);
