@@ -16,7 +16,10 @@
 
 var express = require('express'); // npm install express
 var bodyParser = require('body-parser'); // npm install body-parser
+var cookieParser = require('cookie-parser'); // npm install cookie-parser
 var log4js = require('log4js'); // npm install log4js
+// v1: time-based, v4: random
+var uuid = require('uuid/v4'); // npm install uuid
 var path = require('path');
 var query = require('./utils/mysql');
 var utils = require('./utils/utils');
@@ -30,6 +33,8 @@ var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 // 解析 POST JSON
 //app.use(bodyParser.json({ limit: '1mb' }));
+
+app.use(cookieParser());
 
 // 支持静态文件
 app.use(express.static('../pages/public'));
@@ -47,13 +52,9 @@ logger.setLevel('INFO'); // TRACE, DEBUG, INFO, WARN, ERROR, FATAL
 
 
 // 接口：申请适配图标
-app.post('/req/:iconpack([A-Za-z\\d\._]+)', function(req, res) {
-  var iconPack = req.params.iconpack;
+app.post('/req/:ip([A-Za-z\\d\._]+)', function(req, res) {
+  var iconPack = req.params.ip;
   logger.info('POST /req/' + iconPack);
-  var icon = req.body.icon;
-  if (!icon) {
-    icon = null;
-  }
   var label = req.body.label;
   if (!label) {
     label = null;
@@ -98,7 +99,7 @@ app.post('/req/:iconpack([A-Za-z\\d\._]+)', function(req, res) {
   if (!deviceSdk) {
     deviceSdk = 0;
   }
-  var sqlOptions = [icon, label, labelEn, pkg, launcher, sysApp, iconPack, deviceId, deviceBrand, deviceModel, deviceSdk];
+  var sqlOptions = [label, labelEn, pkg, launcher, sysApp, iconPack, deviceId, deviceBrand, deviceModel, deviceSdk];
   query(utils.sqlCmds.req, sqlOptions, function(err, rows) {
     if (err) {
       logger.warn(err);
@@ -118,8 +119,8 @@ app.post('/req/:iconpack([A-Za-z\\d\._]+)', function(req, res) {
 });
 
 // 接口：查询对目标APP的请求适配次数
-app.get('/reqnum/:iconpack([A-Za-z\\d\._]+)/:pkg([A-Za-z\\d\._]+)', function(req, res) {
-  var iconPack = req.params.iconpack;
+app.get('/reqnum/:ip([A-Za-z\\d\._]+)/:pkg([A-Za-z\\d\._]+)', function(req, res) {
+  var iconPack = req.params.ip;
   var pkg = req.params.pkg;
   var deviceId = req.query.deviceid;
   if (!deviceId) {
@@ -149,8 +150,8 @@ app.get('/reqnum/:iconpack([A-Za-z\\d\._]+)/:pkg([A-Za-z\\d\._]+)', function(req
 
 // TODO DEPRECATED
 // 接口：查询请求数TOP的APP
-app.get('/reqtop/:iconpack([A-Za-z\\d\._]+)/:user', function(req, res) {
-  var iconPack = req.params.iconpack;
+app.get('/reqtop/:ip([A-Za-z\\d\._]+)/:user', function(req, res) {
+  var iconPack = req.params.ip;
   var user = req.params.user;
   var limitNum = parseInt(req.query.limit);
   if (!limitNum) {
@@ -200,8 +201,8 @@ app.get('/reqtop/:iconpack([A-Za-z\\d\._]+)/:user', function(req, res) {
 });
 
 // 接口：查询请求数TOP的APP
-app.get('/reqtop2/:iconpack([A-Za-z\\d\._]+)/:user', function(req, res) {
-  var iconPack = req.params.iconpack;
+app.get('/reqtop2/:ip([A-Za-z\\d\._]+)/:user', function(req, res) {
+  var iconPack = req.params.ip;
   var user = req.params.user;
   var limitNum = parseInt(req.query.limit);
   if (!limitNum) {
@@ -253,8 +254,8 @@ app.get('/reqtop2/:iconpack([A-Za-z\\d\._]+)/:user', function(req, res) {
 
 // TODO DEPRECATED
 // 接口：在已标记的APP中查询请求数TOP的APP
-app.get('/reqtopfiltered/:iconpack([A-Za-z\\d\._]+)/:user', function(req, res) {
-  var iconPack = req.params.iconpack;
+app.get('/reqtopfiltered/:ip([A-Za-z\\d\._]+)/:user', function(req, res) {
+  var iconPack = req.params.ip;
   var user = req.params.user;
   logger.info('GET /reqtopfiltered/' + iconPack + '/' + user);
   var sqlOptions = [iconPack, user];
@@ -269,8 +270,8 @@ app.get('/reqtopfiltered/:iconpack([A-Za-z\\d\._]+)/:user', function(req, res) {
 });
 
 // 接口：在已标记的APP中查询请求数TOP的APP
-app.get('/reqtopfiltered2/:iconpack([A-Za-z\\d\._]+)/:user', function(req, res) {
-  var iconPack = req.params.iconpack;
+app.get('/reqtopfiltered2/:ip([A-Za-z\\d\._]+)/:user', function(req, res) {
+  var iconPack = req.params.ip;
   var user = req.params.user;
   logger.info('GET /reqtopfiltered2/' + iconPack + '/' + user);
   var sqlOptions = [iconPack, user];
@@ -285,8 +286,8 @@ app.get('/reqtopfiltered2/:iconpack([A-Za-z\\d\._]+)/:user', function(req, res) 
 });
 
 // 接口：对申请适配的APP标记已处理
-app.post('/reqfilter/:iconpack([A-Za-z\\d\._]+)/:user', function(req, res) {
-  var iconPack = req.params.iconpack;
+app.post('/reqfilter/:ip([A-Za-z\\d\._]+)/:user', function(req, res) {
+  var iconPack = req.params.ip;
   var user = req.params.user;
   logger.info('POST /reqfilter/' + iconPack + '/' + user);
   var pkg = req.body.pkg;
@@ -312,10 +313,10 @@ app.post('/reqfilter/:iconpack([A-Za-z\\d\._]+)/:user', function(req, res) {
 });
 
 // 接口：对申请适配的APP标记未处理
-app.delete('/reqfilter/:iconpack([A-Za-z\\d\._]+)/:user', function(req, res) {
-  var iconPack = req.params.iconpack;
+app.delete('/reqfilter/:ip([A-Za-z\\d\._]+)/:user', function(req, res) {
+  var iconPack = req.params.ip;
   var user = req.params.user;
-  logger.info('DELEET /reqfilter/' + iconPack + '/' + user);
+  logger.info('DELETE /reqfilter/' + iconPack + '/' + user);
   var pkg = req.query.pkg;
   if (!pkg) {
     logger.warn('REJECT: No req.query.pkg');
@@ -336,11 +337,7 @@ app.delete('/reqfilter/:iconpack([A-Za-z\\d\._]+)/:user', function(req, res) {
       res.jsonp(utils.getResRes(3));
       return;
     }
-    if (rows.affectedRows > 0) {
-      res.jsonp(utils.getResRes(0));
-    } else {
-      res.jsonp(utils.getResRes(5));
-    }
+    res.jsonp(utils.getResRes(rows.affectedRows > 0 ? 0 : 5));
   });
 });
 
@@ -358,8 +355,9 @@ app.get('/code/:keyword', function(req, res) {
     sql = utils.sqlCmds.queryByPkg;
     sqlOptions = [keyword];
   } else {
+    keyword = keyword.replace(/^|\s+|$/g, '%');
     sql = utils.sqlCmds.queryByLabel;
-    sqlOptions = ['%' + keyword + '%', '%' + keyword + '%'];
+    sqlOptions = [keyword, keyword];
   }
   query(sql, sqlOptions, function(err, rows) {
     if (err) {
@@ -562,8 +560,75 @@ app.get('/base', function(req, res) {
   });
 });
 
+// 接口：添加赞助记录
+app.post('/donate/:ip([A-Za-z\d\._]+)/:user', function(req, res) {
+  var iconPack = req.params.ip;
+  var user = req.params.user;
+  logger.info('POST /donate/' + iconPack + '/' + user);
+  var money = parseFloat(req.body.money);
+  if (!money || money <= 0 || money >= 10000) {
+    logger.warn('REJECT: No req.body.money');
+    res.jsonp(utils.getResRes(2));
+    return;
+  }
+  var donator = req.body.donator;
+  if (!donator) {
+    donator = null;
+  }
+  var date = req.body.date;
+  if (!date) {
+    date = null;
+  }
+  var id = uuid();
+  var sqlOptions = [id, iconPack, user, money, donator, date];
+  query(utils.sqlCmds.addDonate, sqlOptions, function(err, rows) {
+    if (err) {
+      logger.warn(err);
+      res.jsonp(utils.getResRes(3));
+      return;
+    }
+    res.jsonp(utils.getResRes(rows.affectedRows > 0 ? 0 : 4));
+  });
+});
+
+// 接口：删除赞助记录
+app.delete('/donate', function(req, res) {
+  var id = req.query.id;
+  logger.info('DELETE /donate?id=' + id);
+  if (!id || id.length != 32) {
+    logger.warn('REJECT: Invalid req.query.id');
+    res.jsonp(utils.getResRes(2));
+    return;
+  }
+  var sqlOptions = [id];
+  query(utils.sqlCmds.removeDonate, sqlOptions, function(err, rows) {
+    if (err) {
+      logger.warn(err);
+      res.jsonp(utils.getResRes(3));
+      return;
+    }
+    res.jsonp(utils.getResRes(rows.affectedRows > 0 ? 0 : 5));
+  });
+});
+
+// 接口：获取目标图标包的赞助记录
+app.get('/donate/:ip([A-Za-z\d\._]+)/:user', function(req, res) {
+  var iconPack = req.params.ip;
+  var user = req.params.user;
+  logger.info('GET /donate/' + iconPack + '/' + user);
+  var sqlOptions = [iconPack, user];
+  query(utils.sqlCmds.donates, sqlOptions, function(err, rows) {
+    if (err) {
+      logger.warn(err);
+      res.jsonp(utils.getResRes(3));
+      return;
+    }
+    res.jsonp(utils.getResRes(0, undefined, rows));
+  });
+});
+
 // 根据包名获取图标链接（来源为酷安）（TODO 移除）
-/*app.get('/iconurl/:pkg([A-Za-z\\d\._]+)', function(req, res) {
+/*app.get('/iconurl/:pkg([A-Za-z\d\._]+)', function(req, res) {
   var pkg = req.params.pkg;
   logger.info('GET /iconurl/' + pkg);
   var url = 'http://api.coolapk.com/market/v2/api.php'
@@ -644,6 +709,25 @@ app.get('/page/base', function(req, res) {
   res.sendFile(path.resolve('../pages/base.htm'));
 });
 
+// 页面：更多
+app.get('/page/more', function(req, res) {
+  logger.info('GET /page/more');
+  var cookies = req.cookies;
+  switch (cookies.morePage) {
+    case 'mark':
+      res.redirect('/page/mark');
+      break;
+    case 'donate':
+      res.redirect('/page/donate');
+      break;
+    case 'appfilter':
+      res.redirect('/page/appfilter');
+      break;
+    default:
+      res.redirect('/page/stats');
+  }
+});
+
 // 页面：图标包统计
 app.get('/page/stats', function(req, res) {
   logger.info('GET /page/stats');
@@ -656,7 +740,13 @@ app.get('/page/mark', function(req, res) {
   res.sendFile(path.resolve('../pages/mark.htm'));
 });
 
-// 页面：优化 appfilter
+// 页面：赞助记录
+app.get('/page/donate', function(req, res) {
+  logger.info('GET /page/donate');
+  res.sendFile(path.resolve('../pages/donate.htm'));
+});
+
+// 页面：优化 appfilter.xml
 app.get('/page/appfilter', function(req, res) {
   logger.info('GET /page/appfilter');
   res.sendFile(path.resolve('../pages/appfilter.htm'));

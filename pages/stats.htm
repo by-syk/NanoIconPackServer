@@ -57,6 +57,7 @@ var bgColors = [
 var borderColors = [
   "rgb(255, 99, 132)", "rgb(255, 159, 64)", "rgb(255, 205, 86)", "rgb(75, 192, 192)", "rgb(54, 162, 235)", "rgb(153, 102, 255)", "rgb(201, 203, 207)"
 ];
+Cookies.set('morePage', 'stats', {expires: 365});
 $(document).ready(function() {
   var reqIconPack = getQuery("ip");
   if (reqIconPack == undefined) {
@@ -66,7 +67,7 @@ $(document).ready(function() {
         $("#inputIconPack").focus();
         return true;
       }
-      Cookies.set("statsIp", iconPack); // 缓存
+      Cookies.set("statsIp", iconPack, {expires: 365}); // 缓存
       window.location.href = "./stats?ip=" + iconPack;
     });
     $("#inputIconPack").val(Cookies.get("statsIp")); // 使用缓存
@@ -75,12 +76,19 @@ $(document).ready(function() {
         $("#btTrend").click();
       }
     });
-    $.get("/stats/month", function(data) {
+    var statsData = Cookies.getJSON('statsData');
+    if (statsData) { // 使用缓存
       $("#divLoading").hide();
-      if (data && data.status == 0) {
-        renderChart(data.result);
-      }
-    });
+      renderChart(statsData);
+    } else {
+      $.get("/stats/month", function(data) {
+        $("#divLoading").hide();
+        if (data && data.status == 0) {
+          Cookies.set('statsData', data.result, {expires: 1}); // 缓存一天
+          renderChart(data.result);
+        }
+      });
+    }
   } else {
     $("#divTrendQuery").hide();
     $.get("/trend/week/" + reqIconPack, function(data) {
@@ -212,10 +220,6 @@ function renderChart4One(data, title) {
     }
   });
 }
-// 显示捐赠二维码对话框
-function showDonate() {
-  $("#donateDlg").modal("show");
-}
 </script>
 </head>
 
@@ -234,22 +238,19 @@ function showDonate() {
   </div>
   <div id="navBarMenu" class="collapse navbar-collapse">
     <ul class="nav navbar-nav">
-      <li><a href="./query">APP代码速查</a></li>
-      <li><a href="./base">常用APP代码</a></li>
       <li class="active"><a href="./stats"><i class="fa fa-bar-chart fa-fw" aria-hidden="true"></i> 图标包统计</a></li>
       <li><a href="./mark">申请管理</a></li>
+      <li><a href="./donate">赞助记录</a></li>
       <li class="dropdown">
         <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button">配置工具 <span class="caret"></span></a>
         <ul class="dropdown-menu">
-          <li><a href="./appfilter">优化 appfilter.xml</a></li>
+          <li><a href="./appfilter"><i class="fa fa-hand-o-right fa-fw" aria-hidden="true"></i> 优化 appfilter.xml</a></li>
         </ul>
       </li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
       <li><a class="visible-xs-block" href="https://github.com/by-syk/NanoIconPackServer" target="_blank">GitHub</a></li>
-      <li><a class="visible-xs-block" href="javascript:void(0);" onclick="$('#donateDlg').modal('show')">捐赠支持</a></li>
       <li><a class="hidden-xs" href="https://github.com/by-syk/NanoIconPackServer" target="_blank" title="GitHub">&nbsp;<i class="fa fa-github fa-lg"></i>&nbsp;</a></li>
-      <li><a class="hidden-xs" href="javascript:void(0);" onclick="$('#donateDlg').modal('show')" title="捐赠支持">&nbsp;<i class="fa fa-credit-card fa-lg"></i>&nbsp;</a></li>
     </ul>
   </div>
 </div>
@@ -274,30 +275,6 @@ function showDonate() {
   </div>
   <canvas id="chart" width="300" height="150"></canvas>
   <div id="mobileFlag" class="visible-xs-block"></div>
-</div>
-
-<div id="donateDlg" class="modal fade">
-<div class="modal-dialog modal-sm">
-<div class="modal-content">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal">
-      <span aria-hidden="true">&times;</span>
-    </button>
-    <h4 class="modal-title">捐赠支持</h4>
-  </div>
-  <div class="modal-body">
-    <div class="row"><div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 col-lg-offset-3 col-md-offset-3 col-sm-offset-3 col-xs-offset-3">
-      <img src="../static/imgs/donate.svg">
-    </div></div>
-    <br />
-    <p>目前 NanoIconPack 服务器由我个人维护并持续为接入的用户提供服务，尚无任何盈利。如果您有所受益，不妨与我分担服务器费用。在此谢过！</p>
-    <p>我的支付宝：<a href="javascript:void(0);" onclick="copyText('By_syk@163.com')">By_syk@163.com <i class="fa fa-clone"></i></a></p>
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-  </div>
-</div>
-</div>
 </div>
 
 <nav class="navbar navbar-default navbar-fixed-bottom">

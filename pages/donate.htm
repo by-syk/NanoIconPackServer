@@ -26,7 +26,7 @@
 <meta name="keyword" content="NanoIconPack" />
 <meta name="description" content="NanoIconPack Console" />
 <meta name="theme-color" content="#607D8B"><!-- for Chrome for Android -->
-<title>NanoMark</title>
+<title>NanoDonate</title>
 
 <!-- ICON -->
 <link rel="icon" type="image/png" href="../static/imgs/favicon-32.png" sizes="32x32">
@@ -47,18 +47,20 @@
 <script src="../static/js/js.cookie.js"></script>
 <script src="../static/js/jquery.toaster.js"></script>
 <script src="../static/js/jquery.copy.js?v=1.1.1"></script>
+<script src="../static/js/utils.js?v=17072900"></script>
 
 <script type="text/javascript">
 var configInited = false;
-Cookies.set('morePage', 'mark', {expires: 365});
+Cookies.set('morePage', 'donate', {expires: 365});
 $(document).ready(function() {
-  $("#collapseConfig").on("shown.bs.collapse", function() {
-    $(".fa-cog").addClass("fa-spin");
+  $("#collapseInsert").on("shown.bs.collapse", function() {
     if (configInited) {
       return;
     }
     configInited = true;
 
+    $("#inputDate").val(formatDate(new Date(), "yyyy-MM-dd"));
+    
     $("#inputKey").val(Cookies.get("markKey"));
     $.get("/iconpacks", function(data) {
       if (data && data.status == 0) {
@@ -66,15 +68,7 @@ $(document).ready(function() {
       }
     });
   });
-  $("#collapseConfig").on("hidden.bs.collapse", function() {
-    $(".fa-cog").removeClass("fa-spin");
-  });
-  $("#inputKey").bind("keypress", function(event) {
-    if(event.keyCode == "13") {
-      $("#btConfig").click();
-    }
-  });
-  $("#btConfig").click(function() {
+  $("#btInsert").click(function() {
     var iconPack = $("#selectIp").val();
     var key = $("#inputKey").val().trim();
     if (!key) {
@@ -82,95 +76,90 @@ $(document).ready(function() {
       $("#inputKey").focus();
       return;
     }
-    $("#collapseConfig").collapse("hide");
-    Cookies.set("markIp", iconPack, {expires: 365});
-    Cookies.set("markKey", key, {expires: 365});
-    loadData(iconPack, key, Cookies.get("markCate"));
-  });
-  switchCate(Cookies.get("markCate"));
-  $("#btGroupShow button").click(function() {
-    var cookieCate = Cookies.get("markCate");
-    var cate = $(this).attr("data-id");
-    if (cate == cookieCate) {
+    var money = $("#inputMoney").val().trim();
+    money = parseFloat(money);
+    if (!money || money <= 0 || money > 10000) {
+      $("#divMoney").addClass("has-warning");
+      $("#inputMoney").focus();
       return;
     }
-    Cookies.set("markCate", cate, {expires: 365});
-    switchCate(cate);
-    loadData(Cookies.get("markIp"), Cookies.get("markKey"), cate);
+    var donator = $("#inputDonator").val().trim();
+    var date = $("#inputDate").val().trim();
+    //$("#collapseInsert").collapse("hide");
+    Cookies.set("markIp", iconPack, {expires: 365});
+    Cookies.set("markKey", key, {expires: 365});
+    addDonate(iconPack, key, money, donator, date);
+  });
+  switchSort(Cookies.get("donateSort"));
+  $("#btGroupSort button").click(function() {
+    var cookieSort = Cookies.get("donateSort");
+    var sort = $(this).attr("data-id");
+    if (sort == cookieSort) {
+      return;
+    }
+    Cookies.set("donateSort", sort, {expires: 365});
+    switchSort(sort);
+    loadData(Cookies.get("markIp"), Cookies.get("markKey"), sort);
   });
   if (Cookies.get("markIp") && Cookies.get("markKey")) {
-    loadData(Cookies.get("markIp"), Cookies.get("markKey"), Cookies.get("markCate"));
+    loadData(Cookies.get("markIp"), Cookies.get("markKey"), Cookies.get("donateSort"));
   } else {
-    $("#collapseConfig").collapse("show");
+    $("#collapseInsert").collapse("show");
   }
 });
-function loadData(iconPack, key, cate) {
+function loadData(iconPack, key, sort) {
   updateStatus("<i class=\"fa fa-spinner fa-spin fa-fw\"></i> 加载中&#8230;");
-  if (cate == "marked") {
-    $.get("/reqtopfiltered2/" + iconPack + "/" + key, function(data) {
-      if (data && data.status == 0) {
-        fill(data, cate);
-      }
-    });
-  } else if (cate == "all") {
-    $.get("/reqtop2/" + iconPack + "/" + key, {
-      limit: 128,
-      filter: false
-    }, function(data) {
-      if (data && data.status == 0) {
-        fill(data, cate);
-      }
-    });
-  } else/* if (cate == "unmarked")*/ {
-    $.get("/reqtop2/" + iconPack + "/" + key, {
-      limit: 128,
-      filter: true
-    }, function(data) {
-      if (data && data.status == 0) {
-        fill(data, cate);
-      }
-    });
-  }
+  $.get("/donate/" + iconPack + "/" + key, function(data) {
+    fill(data, sort);
+  });
 }
-function mark(trObj, iconPack, key, pkg, launcher) {
-  $.post("/reqfilter/" + iconPack + "/" + key, {
-    pkg: pkg,
-    launcher: launcher
+function resetInsert() {
+  $("#inputMoney").val("");
+  $("#inputDonator").val("");
+  $("#inputDate").val(formatDate(new Date(), "yyyy-MM-dd"));
+  $("#divMoney").removeClass("has-warning");
+}
+function addDonate(iconPack, key, money, donator, date) {
+  $("#btInsert").html("<i class=\"fa fa-spinner fa-spin fa-fw\"></i> 添加");
+  $.post("/donate/" + iconPack + "/" + key, {
+    money: money,
+    donator: donator,
+    date: date
   }, function(data) {
+    $("#btInsert").html("&nbsp;添加&nbsp;");
     if (data && data.status == 0) {
-      trObj.find("i.fa").removeClass("fa-check").addClass("fa-reply").attr("title", "取消已适配标记");
-      trObj.addClass("success");
+      loadData(iconPack, key, Cookies.get("donateSort"));
       $.toaster({
         title: "提示",
-        message: "已标记为已适配",
+        message: "添加成功",
         priority: "success"
       });
+      resetInsert();
     } else {
       $.toaster({
         title: "提示",
-        message: "标记失败",
+        message: "添加失败：" + data.msg,
         priority: "warning"
       });
     }
   });
 }
-function undoMark(trObj, iconPack, key, pkg, launcher) {
+function removeDonate(trObj, id) {
   $.ajax({
-    url: "/reqfilter/" + iconPack + "/" + key + "?pkg=" + pkg + "&launcher=" + launcher,
+    url: "/donate?id=" + id,
     type: "DELETE",
     success: function(data) {
       if (data && data.status == 0) {
-        trObj.find("i.fa").removeClass("fa-reply").addClass("fa-check").attr("title", "标记为已适配");
-        trObj.addClass("success");
+        trObj.remove();
         $.toaster({
           title: "提示",
-          message: "已取消已适配标记",
+          message: "已删除该赞助记录",
           priority: "success"
         });
       } else {
         $.toaster({
           title: "提示",
-          message: "取消标记失败",
+          message: "删除失败",
           priority: "warning"
         });
       }
@@ -178,47 +167,40 @@ function undoMark(trObj, iconPack, key, pkg, launcher) {
     error: function() {
       $.toaster({
         title: "提示",
-        message: "取消标记失败",
+        message: "删除失败",
         priority: "warning"
       });
     }
   });
 }
 function clear(str) {
-  $("#codeTbody").empty();
+  $("#donateTbody").empty();
 }
 function generateStatusCode(str) {
-  var rows = $("#codeTheadTr").children().length;
+  var rows = $("#donateTheadTr").children().length;
   return "<tr><td>&nbsp;</td><td colspan=\"" + (rows - 1) + "\">" + str + "</td></tr>";
 }
 function updateStatus(str) {
   clear();
-  $("#codeTbody").append(generateStatusCode(str));
+  $("#donateTbody").append(generateStatusCode(str));
 }
-function switchCate(cate) {
-  if (!cate || cate == "unmarked") {
-    $("#btShowUnmarked").removeClass("btn-default").addClass("btn-primary");
-    $("#btShowUnmarked i").removeClass("hidden");
+function switchSort(sort) {
+  if (!sort || sort == "date") {
+    $("#btSortDate").removeClass("btn-default").addClass("btn-primary");
+    $("#btSortDate i").removeClass("hidden");
   } else {
-    $("#btShowUnmarked").removeClass("btn-primary").addClass("btn-default");
-    $("#btShowUnmarked i").addClass("hidden");
+    $("#btSortDate").removeClass("btn-primary").addClass("btn-default");
+    $("#btSortDate i").addClass("hidden");
   }
-  if (cate == "marked") {
-    $("#btShowMarked").removeClass("btn-default").addClass("btn-primary");
-    $("#btShowMarked i").removeClass("hidden");
+  if (sort == "money") {
+    $("#btSortMoney").removeClass("btn-default").addClass("btn-primary");
+    $("#btSortMoney i").removeClass("hidden");
   } else {
-    $("#btShowMarked").removeClass("btn-primary").addClass("btn-default");
-    $("#btShowMarked i").addClass("hidden");
-  }
-  if (cate == "all") {
-    $("#btShowAll").removeClass("btn-default").addClass("btn-primary");
-    $("#btShowAll i").removeClass("hidden");
-  } else {
-    $("#btShowAll").removeClass("btn-primary").addClass("btn-default");
-    $("#btShowAll i").addClass("hidden");
+    $("#btSortMoney").removeClass("btn-primary").addClass("btn-default");
+    $("#btSortMoney i").addClass("hidden");
   }
 }
-function fill(data, cate) {
+function fill(data, sort) {
   if (!data) {
     updateStatus("<i class=\"fa fa-bug\"></i> 出错");
     return;
@@ -232,53 +214,40 @@ function fill(data, cate) {
     updateStatus("<i class=\"fa fa-sticky-note-o\"></i> 无数据");
     return;
   }
+  if (sort == "money") {
+    dataArr.sort(function(a, b) {
+      return b.money - a.money;
+    });
+  } else/* if (sort == "date")*/ {
+    dataArr.sort(function(a, b) {
+      if (a.date == b.date) {
+        return b.money - a.money;
+      }
+      return b.date > a.date ? 1 : -1;
+    });
+  }
   clear();
+  var totalMoney = 0;
   for (var i = 0; i < dataArr.length; ++i) {
     var item = dataArr[i];
-    if (!item.label) {
-      item.label = "&nbsp;";
-    }
+    totalMoney += item.money;
+    var donator = item.donator ? item.donator : "&nbsp;"
     var code = "<tr>";
     code += "<td style=\"color: darkgrey\">" + (i + 1) + "</td>";
-    code += "<td><span class=\"badge\">" + item.sum + "</span></td>";
-    if (item.filter == 1) {
-      //<span class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"></span>
-      code += "<td><button type=\"button\" class=\"btn btn-link btn-xs\" title=\"取消已适配标记\"><i class=\"fa fa-reply fa-lg\" aria-hidden=\"true\"></i></button></td>";
-    } else {
-      //<span class=\"glyphicon glyphicon-ok\" aria-hidden=\"true\"></span>
-      code += "<td><button type=\"button\" class=\"btn btn-link btn-xs\" title=\"标记为已适配\"><i class=\"fa fa-check fa-lg\" aria-hidden=\"true\"></i></button></td>";
-    }
-    code += "<td>" + item.label + "</td>";
-    code += "<td><code>" + item.pkg + "</code><br /><code>" + item.launcher + "</code></td>";
-    code += "<td><a href=\"javascript:void(0);\" data-url=\"https://www.coolapk.com/apk/" + item.pkg + "\">图标</a></td>";
-    //code += "<td><a href=\"javascript:void(0);\" data-url=\"http://sj.qq.com/myapp/detail.htm?apkName=" + item.pkg + "\">图标</a></td>";
+    code += "<td>" + donator + "</td>";
+    code += "<td><span class=\"badge\">" + item.money + "</span></td>";
+    code += "<td>" + date(item.date) + "</td>";
+    code += "<td><button type=\"button\" class=\"btn btn-link btn-xs\" title=\"删除该赞助记录\" data-id=\"" + item.id + "\"><i class=\"fa fa-remove fa-lg\" aria-hidden=\"true\"></i></button></td>";
     code += "</tr>";
-    $("#codeTbody").append(code);
+    $("#donateTbody").append(code);
   }
+  $("#totalMoney").text(totalMoney);
   if (dataArr.length > 0) {
-    if (cate == "marked") {
-      $("#codeTbody").append(generateStatusCode("<i class=\"fa fa-file-text-o\" aria-hidden=\"true\"></i> 以上为全部数据"));
-    } else if (cate == "all") {
-      $("#codeTbody").append(generateStatusCode("<i class=\"fa fa-file-text-o\" aria-hidden=\"true\"></i> 以上为 TOP128 数据"));
-    } else/* if (cate == "marked")*/ {
-      $("#codeTbody").append(generateStatusCode("<i class=\"fa fa-file-text-o\" aria-hidden=\"true\"></i> 以上为 TOP128 的数据"));
-    }
+    $("#donateTbody").append(generateStatusCode("<i class=\"fa fa-file-text-o\" aria-hidden=\"true\"></i> 以上为全部数据"));
   }
-  $("#codeTbody tr td a").click(function() {
-    window.open($(this).attr("data-url"));
-    return false; // 阻止继续向下分发点击事件
-  });
-  $("#codeTbody tr td button").click(function() {
-    return true; // 继续向下分发点击事件
-  });
-  $("#codeTbody tr").click(function() {
-    var index = parseInt($(this).children().eq(0).text()) - 1;
-    var item = dataArr[index];
-    if ($(this).find("i.fa").hasClass("fa-check")) {
-      mark($(this), Cookies.get("markIp"), Cookies.get("markKey"), item.pkg, item.launcher);
-    } else {
-      undoMark($(this), Cookies.get("markIp"), Cookies.get("markKey"), item.pkg, item.launcher);
-    }
+  $("#donateTbody tr td button").click(function() {
+    var id = $(this).attr("data-id");
+    removeDonate($(this).parents("tr"), id);
   });
 }
 function fillIconPacks(data) {
@@ -296,6 +265,12 @@ function fillIconPacks(data) {
     code += ">" + item + "</option>";
     $("#selectIp").append(code);
   }
+}
+function date(date) {
+  if (!date) {
+    return "&nbsp;";
+  }
+  return date.substring(0, 4) + "-" + date.substring(4, 6) + "-" + date.substring(6, 8);
 }
 </script>
 </head>
@@ -315,8 +290,8 @@ function fillIconPacks(data) {
   <div id="navBarMenu" class="collapse navbar-collapse">
     <ul class="nav navbar-nav">
       <li><a href="./stats">图标包统计</a></li>
-      <li class="active"><a href="./mark"><i class="fa fa-check-square-o fa-fw" aria-hidden="true"></i> 申请管理</a></li>
-      <li><a href="./donate">赞助记录</a></li>
+      <li><a href="./mark">申请管理</a></li>
+      <li class="active"><a href="./donate"><i class="fa fa-cny fa-fw" aria-hidden="true"></i> 赞助记录</a></li>
       <li class="dropdown">
         <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button">配置工具 <span class="caret"></span></a>
         <ul class="dropdown-menu">
@@ -335,56 +310,83 @@ function fillIconPacks(data) {
 <div class="container">
   <div class="alert alert-info alert-dismissible" role="alert">
     <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span></button>
-    <i class="fa fa-info-circle"></i> 更完整的申请管理功能请使用相应图标包APP内置的「申请统计」模块。
+    <i class="fa fa-info-circle"></i> 记录图标包的赞助者和收到的金额。
+  </div>
+
+  <div class="jumbotron">
+    <h1 class="text-center"><small>￥</small><span id="totalMoney">0</span></h1>
   </div>
 
   <div class="panel panel-primary">
     <div class="panel-heading" role="tab">
       <!--<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>-->
-      <h3 class="panel-title"><i class="fa fa-cog" aria-hidden="true"></i> <a href="#collapseConfig" data-toggle="collapse" role="button">设置</a></h3>
+      <h3 class="panel-title"><i class="fa fa-plus" aria-hidden="true"></i> <a href="#collapseInsert" data-toggle="collapse" role="button">添加</a></h3>
     </div>
-    <div id="collapseConfig" class="panel-collapse collapse" role="tabpanel">
-      <div id="divConfig" class="panel-body">
+    <div id="collapseInsert" class="panel-collapse collapse" role="tabpanel">
+      <div id="divInsert" class="panel-body">
         <div class="form-group">
-          <label for="selectIp">图标包</label>
           <div class="input-group">
-            <div class="input-group-addon"><i class="fa fa-android fa-fw"></i></div>
+            <div class="input-group-addon">图标包</div>
             <select id="selectIp" class="form-control"></select>
           </div>
           <p class="help-block">如果你是 NanoIconPack 系图标包作者，请选择您的图标包。</p>
         </div>
         <div id="divKey" class="form-group">
-          <label for="inputKey">口令</label>
           <div class="input-group">
-            <div class="input-group-addon"><i class="fa fa-user-circle fa-fw"></i></div>
+            <div class="input-group-addon">口令</div>
             <input id="inputKey" type="text" class="form-control">
           </div>
           <p class="help-block">请设置一个口令，以便于系统区分不同用户并针对性保存数据。</p>
         </div>
+        <hr />
+        <div class="row">
+        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+        <div id="divMoney" class="form-group">
+          <div class="input-group">
+            <div class="input-group-addon">&nbsp;￥&nbsp;</div>
+            <input id="inputMoney" type="number" class="form-control">
+          </div>
+        </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+        <div class="form-group">
+          <div class="input-group">
+            <div class="input-group-addon">赞助者</div>
+            <input id="inputDonator" type="text" class="form-control">
+          </div>
+        </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+        <div class="form-group">
+          <div class="input-group">
+            <div class="input-group-addon">日期</div>
+            <input id="inputDate" type="date" class="form-control">
+          </div>
+        </div>
+        </div>
+        </div>
         <div class="text-right">
-          <button id="btConfig" type="button" class="btn btn-primary">&nbsp;确定&nbsp;</button>
+          <button id="btInsert" type="button" class="btn btn-primary">&nbsp;添加&nbsp;</button>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="text-center"><div id="btGroupShow" class="btn-group" role="group">
-    <button id="btShowUnmarked" type="button" class="btn btn-default" data-id="unmarked"><i class="fa fa-eye hidden"></i> 未标记</button>
-    <button id="btShowMarked" type="button" class="btn btn-default" data-id="marked"><i class="fa fa-eye hidden"></i> 已标记</button>
-    <button id="btShowAll" type="button" class="btn btn-default" data-id="all"><i class="fa fa-eye hidden"></i> 全部</button>
+  <div class="text-center"><div id="btGroupSort" class="btn-group" role="group">
+    <button id="btSortDate" type="button" class="btn btn-default" data-id="date"><i class="fa fa-sort-amount-desc hidden"></i> 日期</button>
+    <button id="btSortMoney" type="button" class="btn btn-default" data-id="money"><i class="fa fa-sort-amount-desc hidden"></i> 金额</button>
   </div></div>
   <br />
 
-  <div class="table-responsive"><table class="table table-hover">
-    <thead><tr id="codeTheadTr">
+  <div class="table-responsive"><table class="table table-striped">
+    <thead><tr id="donateTheadTr">
       <th>#</th>
-      <th>申请次</th>
-      <th>标记</th>
-      <th>APP名</th>
-      <th>包名/启动项</th>
+      <th>赞助者</th>
+      <th>金额</th>
+      <th>日期</th>
       <th>&nbsp;</th>
     </tr></thead>
-    <tbody id="codeTbody"></tbody>
+    <tbody id="donateTbody"></tbody>
   </table></div>
 </div>
 

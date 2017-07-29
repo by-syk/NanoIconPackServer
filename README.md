@@ -28,7 +28,9 @@
 npm install mysql
 npm install express
 npm install body-parser
+npm install cookie-parser
 npm install log4j
+npm install uuid
 ```
 
 在建好库表后（[库表结构](https://github.com/by-syk/NanoIconPackServer/blob/master/dll/sql.dll)），启动：
