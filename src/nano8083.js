@@ -42,16 +42,28 @@ app.use(express.static('../pages/public'));
 // 配置日志输出
 log4js.configure({
   appenders: {
-    nano_file: { type: 'file', filename: '../logs/nano' + serverPort + '.log' },
-    nano_console: { type: 'console' }
+    console: { type: 'console' },
+    //file: {
+    //  type: 'file',
+    //  filename: '../logs/nano' + serverPort + '.log',
+    //  maxLogSize: 8388608
+    //},
+    file: {
+      type: 'dateFile',
+      filename: '../logs/nano' + serverPort + '.log',
+      alwaysIncludePattern: true,
+      pattern: '.yyyyMMdd'
+    }
   },
   categories: {
-    // trace, debug, info, warn, error, fatal
-    default: { appenders: ['nano_file'], level: 'info' }
-    //default: { appenders: ['nano_file', 'nano_console'], level: 'info' }
+    // all < trace < debug < info < warn < error < fatal < mark < off
+    default: { appenders: ['console'], level: 'info' },
+    file: { appenders: ['file'], level: 'info' },
+    //all: { appenders: ['console', 'file'], level: 'info' }
   }
 });
-var logger = log4js.getLogger('nano');
+//var logger = log4js.getLogger('console'); // use default category
+var logger = log4js.getLogger('file'); // use file category
 
 
 // ====================================== API BLOCK START ======================================= //
@@ -719,7 +731,6 @@ app.get('/donate/:ip([A-Za-z\d\._]+)/:user', function(req, res) {
 // 接口：看门狗
 app.get('/watchdog', function(req, res) {
   logger.info('GET /watchdog');
-
   res.jsonp(utils.getResRes(0, undefined, {
     port: serverPort,
     time: Date.now()
@@ -811,11 +822,9 @@ app.get('/page/appfilter', function(req, res) {
 var server = app.listen(serverPort, function() {
   var host = server.address().address;
   var port = server.address().port;
-
   if (host == '::') {
     host = 'localhost';
   }
-
   logger.info('http://%s:%s/', host, port);
 });
 
