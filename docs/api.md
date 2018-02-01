@@ -1,45 +1,83 @@
 # API 一览
 
+
 > 该文档未经严格校对，如有疑问或发现问题请[提交 issue](https://github.com/by-syk/NanoIconPackServer/issues) 或[给我发送邮件](mailto:By_syk@163.com)。
+
 
 #### 接口清单
 
 + [申请适配图标](#申请适配图标)
+
   POST `/req/:iconpack`
+
 + [查询对目标 APP 的请求适配次数](#查询对目标%20APP%20的请求适配次数)
+
   GET `/req/:iconpack/:pkg`
+
 + [查询请求数 TOP 的 APP](#查询请求数%20TOP%20的%20APP)
+
   GET `/reqtop2/:iconpack/:user`
+
 + [在已标记的 APP 中查询请求数 TOP 的 APP](#在已标记的%20APP%20中查询请求数%20TOP%20的%20APP)
+
   GET `/reqtopfiltered2/:iconpack/:user`
+
 + [对申请适配的 APP 标记已处理](#对申请适配的%20APP%20标记已处理)
+
   POST `/reqfilter/:iconpack/:user`
+
 + [对申请适配的 APP 标记未处理](#对申请适配的%20APP%20标记未处理)
+
   DELETE `/reqfilter/:iconpack/:user`
+
 + [根据包名、APP 中英文名查询 APP 代码](#根据包名、APP%20中英文名查询%20APP%20代码)
+
   GET `/code/:keyword`
+
 + [根据包名+启动项查询 APP 代码](#根据包名+启动项查询%20APP%20代码)
+  
   GET `/code/:pkg/:launcher`
+
 + [查询接入的图标包总数](#查询接入的图标包总数)
+
   GET `/sum/iconpack`
+
 + [查询申请的 APP 总数](#查询申请的%20APP%20总数)
+
   GET `/sum/app`
+
 + [查询申请总次数](#查询申请总次数)
+
   GET `/sum/req`
+
 + [统计各图标包最近一月申请用户数和申请次数](#统计各图标包最近一月申请用户数和申请次数)
+
   GET `/stats/month`
+
 + [统计目标图标包周申请趋势](#统计目标图标包周申请趋势)
+
   GET `/trend/week/:iconpack`
+
 + [获取所有图标包](#获取所有图标包)
+
   GET `/iconpacks`
+
 + [获取各系统常用 APP 代码（如电话、信息、相机等）](#获取各系统常用%20APP%20代码（如电话、信息、相机等）)
+
   GET `/base`
+
 + [添加赞助记录](#添加赞助记录)
+
   POST `/donate/:iconpack/:user`
+
 + [删除赞助记录](#删除赞助记录)
+
   DELETE `/donate`
+
 + [获取目标图标包的赞助记录](#获取目标图标包的赞助记录)
+
   DELETE `/donate/:iconpack/:user`
+
 
 #### 申请适配图标
 POST `/req/:iconpack`
@@ -69,6 +107,7 @@ POST `/req/:iconpack`
 }
 ```
 
+
 #### 查询对目标 APP 的请求适配次数
 GET `/req/:iconpack/:pkg`
 
@@ -92,6 +131,7 @@ GET `/req/:iconpack/:pkg`
     }
 }
 ```
+
 
 #### 查询请求数 TOP 的 APP
 GET `/reqtop2/:iconpack/:user`
@@ -130,6 +170,7 @@ GET `/reqtop2/:iconpack/:user`
 }
 ```
 
+
 #### 在已标记的 APP 中查询请求数 TOP 的 APP
 GET `/reqtopfiltered2/:iconpack/:user`
 
@@ -162,6 +203,7 @@ GET `/reqtopfiltered2/:iconpack/:user`
 }
 ```
 
+
 #### 对申请适配的 APP 标记已处理
 POST `/reqfilter/:iconpack/:user`
 
@@ -183,6 +225,7 @@ POST `/reqfilter/:iconpack/:user`
 }
 ```
 
+
 #### 对申请适配的 APP 标记未处理
 DELETE `/reqfilter/:iconpack/:user`
 
@@ -203,6 +246,7 @@ DELETE `/reqfilter/:iconpack/:user`
     "msg": "success"
 }
 ```
+
 
 #### 根据包名、APP 中英文名查询 APP 代码
 GET `/code/:keyword`
@@ -227,6 +271,7 @@ GET `/code/:keyword`
     ]
 }
 ```
+
 
 #### 根据包名+启动项查询 APP 代码
 GET `/code/:pkg/:launcher`
@@ -258,6 +303,7 @@ GET `/code/:pkg/:launcher`
 }
 ```
 
+
 #### 查询接入的图标包总数
 GET `/sum/iconpack`
 
@@ -269,6 +315,7 @@ GET `/sum/iconpack`
     "result": 63
 }
 ```
+
 
 #### 查询申请的 APP 总数
 GET `/sum/app`
@@ -282,6 +329,7 @@ GET `/sum/app`
 }
 ```
 
+
 #### 查询申请总次数
 GET `/sum/req`
 
@@ -293,6 +341,7 @@ GET `/sum/req`
     "result": 2117134
 }
 ```
+
 
 #### 统计各图标包最近一月申请用户数和申请次数
 GET `/stats/month`
@@ -324,6 +373,7 @@ GET `/stats/month`
     ]
 }
 ```
+
 
 #### 统计目标图标包周申请趋势
 GET `/trend/week/:iconpack`
@@ -358,6 +408,7 @@ GET `/trend/week/:iconpack`
 }
 ```
 
+
 #### 获取所有图标包
 GET `/iconpacks`
 
@@ -382,6 +433,7 @@ GET `/iconpacks`
     ]
 }
 ```
+
 
 #### 获取各系统常用 APP 代码（如电话、信息、相机等）
 GET `/base`
@@ -425,6 +477,7 @@ GET `/base`
 }
 ```
 
+
 #### 添加赞助记录
 POST `/donate/:iconpack/:user`
 
@@ -448,6 +501,7 @@ POST `/donate/:iconpack/:user`
 }
 ```
 
+
 #### 删除赞助记录
 DELETE `/donate`
 
@@ -462,6 +516,7 @@ DELETE `/donate`
     "msg": "success"
 }
 ```
+
 
 #### 获取目标图标包的赞助记录
 GET `/donate/:iconpack/:user`
