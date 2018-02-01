@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 By_syk
+ * Copyright 2017-2018 By_syk
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,9 +33,9 @@ exports.sqlCmds = {
   queryByPkg: 'SELECT label, label_en AS labelEn, pkg, launcher, COUNT(*) AS sum FROM req WHERE pkg = ? GROUP BY label, label_en, pkg, launcher',
   queryByLabel: 'SELECT label, label_en AS labelEn, pkg, launcher, COUNT(*) AS sum FROM req WHERE label LIKE ? OR label_en LIKE ? GROUP BY label, label_en, pkg, launcher LIMIT 128',
   queryByPkgLauncher: 'SELECT label, label_en AS labelEn, pkg, launcher FROM req WHERE pkg = ? AND launcher = ? GROUP BY label, label_en',
-  sumReqTimes: 'SELECT COUNT(*) AS sum FROM req',
-  sumApps: 'SELECT COUNT(*) AS sum FROM (SELECT pkg FROM req GROUP BY pkg, launcher) AS pkgs',
-  sumIconPacks: 'SELECT COUNT(*) AS sum FROM (SELECT icon_pack FROM req GROUP BY icon_pack HAVING COUNT(icon_pack) > 128) AS iconPacks',
+  sumReqTime: 'SELECT COUNT(*) AS sum FROM req',
+  sumApp: 'SELECT COUNT(*) AS sum FROM (SELECT pkg FROM req GROUP BY pkg, launcher) AS pkgs',
+  sumIconPack: 'SELECT COUNT(*) AS sum FROM (SELECT icon_pack FROM req GROUP BY icon_pack HAVING COUNT(icon_pack) > 128) AS iconPacks',
   statsReqTimesMonth: 'SELECT ips.label, pkgs.* FROM (SELECT icon_pack AS pkg, COUNT(*) AS reqs FROM req WHERE time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) GROUP BY icon_pack HAVING reqs > 32 ORDER BY reqs DESC) AS pkgs LEFT JOIN icon_pack AS ips ON pkgs.pkg = ips.pkg',
   statsUsersMonth: 'SELECT pkg, COUNT(*) AS users FROM (SELECT icon_pack AS pkg FROM req WHERE time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) GROUP BY icon_pack, device_id) AS t0 GROUP BY pkg HAVING users > 4 ORDER BY users DESC',
   trendReqTimesWeek: 'SELECT DATE_FORMAT(time, \'%x\') AS year, DATE_FORMAT(time, \'%u\') AS week, COUNT(*) AS reqs FROM req WHERE icon_pack = ? GROUP BY year, week ORDER BY year, week ASC',
@@ -138,7 +138,7 @@ exports.getClientIp = function(req) {
 // nginx.conf:
 //   proxy_set_header  X-Real-IP  $remote_addr;
 exports.getRemoteIpViaNginx = function(expressReq) {
-  return expressReq.headers['x-real-ip'] || req.connection.remoteAddress;
+  return expressReq.headers['x-real-ip'] || expressReq.connection.remoteAddress;
 };
 
 // 拼装返回JSON数据

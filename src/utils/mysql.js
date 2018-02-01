@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 By_syk
+ * Copyright 2017-2018 By_syk
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-var mysql = require('mysql'); // npm install mysql
+var mysql = require('mysql'); // npm install mysql@2.15.0
 
 // 数据库连接池配置
 var pool = mysql.createPool({

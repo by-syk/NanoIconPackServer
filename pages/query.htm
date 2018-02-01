@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <!--
-  Copyright 2017 By_syk
+  Copyright 2017-2018 By_syk
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -171,11 +171,11 @@ function fill(data, sort) {
     }
     var code = "<tr>";
     // <span class=\"glyphicon glyphicon-copy\" aria-hidden=\"true\"></span>
-    code += "<td><button type=\"button\" class=\"btn btn-link btn-xs\">复制</button></td>";
+    code += "<td><button type=\"button\" class=\"btn btn-link btn-xs\" title=\"复制完整代码\">复制</button></td>";
     code += "<td>" + item.label + "</td>";
     code += "<td>" + item.labelEn + "</td>";
     //code += "<td><a href=\"https://www.coolapk.com/apk/" + item.pkg + "\" target=\"_blank\">" + item.pkg + "</a></td>";
-    code += "<td><a href=\"javascript:void(0);\" data-url=\"https://www.coolapk.com/apk/" + item.pkg + "\" title=\"去酷安查看\">" + item.pkg + "</a></td>";
+    code += "<td><a href=\"javascript:void(0);\" data-url=\"https://www.coolapk.com/apk/" + item.pkg + "\" title=\"去酷安查看\">" + item.pkg + "</a> <i class=\"fa fa-search fa-fw\" title=\"检索此包名\" style=\"color:#ddd;\"></i></td>";
     //code += "<td><a href=\"javascript:void(0);\" data-url=\"http://sj.qq.com/myapp/detail.htm?apkName=" + item.pkg + "\">" + item.pkg + "</a></td>";
     code += "<td>" + item.launcher + "</td>";
     code += "<td><span class=\"badge\">" + item.sum + "</span></td>";
@@ -184,6 +184,11 @@ function fill(data, sort) {
   }
   $("#codeTbody tr td a").click(function() {
     window.open($(this).attr("data-url"));
+    return false; // 阻止继续向下分发点击事件
+  });
+  $("#codeTbody tr td i").click(function() {
+    $("#inputKeyword").val($(this).parent().text().trim());
+    $("#btQuery").click();
     return false; // 阻止继续向下分发点击事件
   });
   $("#codeTbody tr td button").click(function() {
@@ -212,7 +217,7 @@ function generateCode(tds) {
   } else {
     code += tds.eq(2).text() + " -->";
   }
-  code += "\n<item component=\"ComponentInfo{" + tds.eq(3).text() + "/" + tds.eq(4).text()
+  code += "\n<item component=\"ComponentInfo{" + tds.eq(3).text().trim() + "/" + tds.eq(4).text()
     + "}\" drawable=\"";
   var iconName = codeAppName(tds.eq(2).text());
   if (iconName.length == 0) {
@@ -346,14 +351,14 @@ function showCode(tds) {
   <tr height="50px"><td height="50px" valign="middle" align="center">
   <div class="visible-xs-block copyright">
     <small>
-      Copyright &copy; 2017 <a href="mailto:By_syk@163.com">By_syk</a>. All rights reserved.
+      Copyright &copy; 2017-2018 <a href="mailto:By_syk@163.com">By_syk</a>. All rights reserved.
       <br />
       <a href="http://www.miibeian.gov.cn">蜀ICP备16010934号</a>
     </small>
   </div>
   <div class="hidden-xs copyright">
     <small>
-      Copyright &copy; 2017 <a href="mailto:By_syk@163.com">By_syk</a>. All rights reserved.
+      Copyright &copy; 2017-2018 <a href="mailto:By_syk@163.com">By_syk</a>. All rights reserved.
       | <a href="http://www.miibeian.gov.cn" target="_blank">蜀ICP备16010934号</a>
     </small>
   </div>

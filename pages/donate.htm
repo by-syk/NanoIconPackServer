@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <!--
-  Copyright 2017 By_syk
+  Copyright 2017-2018 By_syk
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -51,6 +51,7 @@
 
 <script type="text/javascript">
 var configInited = false;
+var cacheData = undefined;
 Cookies.set('morePage', 'donate', {expires: 365});
 $(document).ready(function() {
   $("#collapseInsert").on("shown.bs.collapse", function() {
@@ -86,9 +87,18 @@ $(document).ready(function() {
       $("#inputMoney").focus();
       return;
     }
-    var donator = $("#inputDonator").val().trim();
-    var comment = $("#inputComment").val().trim();
     var date = $("#inputDate").val().trim();
+    if (!date) {
+      $("#divDate").addClass("has-warning");
+      $("#inputDate").focus();
+      return;
+    }
+    var donator = $("#inputDonator").val().trim();
+    var donatorPrefix = $('#btDonatorPrefix').text();
+    if (donatorPrefix.indexOf("@") >= 0) {
+      donator = donatorPrefix + donator;
+    }
+    var comment = $("#inputComment").val().trim();
     Cookies.set("markIp", iconPack, {expires: 365});
     Cookies.set("markKey", key, {expires: 365});
     addDonate(iconPack, key, money, donator, comment, date);
@@ -118,7 +128,7 @@ $(document).ready(function() {
     }
     Cookies.set("donateSort", sort, {expires: 365});
     switchSort(sort);
-    loadData(Cookies.get("markIp"), Cookies.get("markKey"), sort);
+    fill(cacheData, sort);
   });
   if (Cookies.get("markIp") && Cookies.get("markKey")) {
     loadData(Cookies.get("markIp"), Cookies.get("markKey"), Cookies.get("donateSort"));
@@ -129,6 +139,7 @@ $(document).ready(function() {
 function loadData(iconPack, key, sort) {
   updateStatus("<i class=\"fa fa-spinner fa-spin fa-fw\"></i> 加载中&#8230;");
   $.get("/donate/" + iconPack + "/" + key, function(data) {
+    cacheData = data;
     fill(data, sort);
   });
 }
@@ -136,7 +147,7 @@ function resetInsert() {
   $("#inputMoney").val("");
   $("#inputDonator").val("");
   $("#inputComment").val("");
-  $("#inputDate").val(formatDate(new Date(), "yyyy-MM-dd"));
+  //$("#inputDate").val(formatDate(new Date(), "yyyy-MM-dd"));
   $("#divKey").removeClass("has-warning");
   $("#divMoney").removeClass("has-warning");
 }
@@ -175,7 +186,7 @@ function removeDonate(trObj, id) {
         var total = parseFloat($("#totalMoney").text());
         var removed = parseFloat(trObj.find(".badge").text())
         if (total && removed) {
-          $("#totalMoney").text(total - removed);
+          $("#totalMoney").text((total - removed).toFixed(2));
         }
         trObj.remove();
         $.toaster({
@@ -272,7 +283,7 @@ function fill(data, sort) {
     code += "</tr>";
     $("#donateTbody").append(code);
   }
-  $("#totalMoney").text(totalMoney);
+  $("#totalMoney").text(totalMoney.toFixed(2));
   if (dataArr.length > 0) {
     $("#donateTbody").append(generateStatusCode("<i class=\"fa fa-file-text-o\" aria-hidden=\"true\"></i> 以上为全部数据"));
   }
@@ -296,6 +307,10 @@ function fillIconPacks(data) {
     code += ">" + item + "</option>";
     $("#selectIp").append(code);
   }
+}
+function changeDonatorPrefix(prefix) {
+  $("#btDonatorPrefix").text(prefix);
+  $("#inputDonator").attr("placeholder", prefix.indexOf("@") >= 0 ? "赞助者" : "");
 }
 function date(date) {
   if (!date) {
@@ -382,7 +397,17 @@ function date(date) {
           <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
             <div class="form-group">
               <div class="input-group">
-                <div class="input-group-addon">赞助者</div>
+                <!--<div class="input-group-addon">赞助者</div>-->
+                <div class="input-group-btn">
+                  <button id="btDonatorPrefix" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">赞助者 <span class="caret"></span></button>
+                  <ul class="dropdown-menu">
+                    <li><a href="javascript:void(0);" onclick="changeDonatorPrefix('alipay@')">alipay@xxx</a></li>
+                    <li><a href="javascript:void(0);" onclick="changeDonatorPrefix('wechat@')">wechat@xxx</a></li>
+                    <li><a href="javascript:void(0);" onclick="changeDonatorPrefix('qq@')">qq@xxx</a></li>
+                    <li><a href="javascript:void(0);" onclick="changeDonatorPrefix('coolapk@')">coolapk@xxx</a></li>
+                    <li><a href="javascript:void(0);" onclick="changeDonatorPrefix('赞助者')">无</a></li>
+                  </ul>
+                </div>
                 <input id="inputDonator" type="text" class="form-control">
               </div>
             </div>
@@ -396,7 +421,7 @@ function date(date) {
             </div>
           </div>
           <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-            <div class="form-group">
+            <div id="divDate" class="form-group">
               <div class="input-group">
                 <div class="input-group-addon">日期</div>
                 <input id="inputDate" type="date" class="form-control">
@@ -435,14 +460,14 @@ function date(date) {
   <tr height="50px"><td height="50px" valign="middle" align="center">
   <div class="visible-xs-block copyright">
     <small>
-      Copyright &copy; 2017 <a href="mailto:By_syk@163.com">By_syk</a>. All rights reserved.
+      Copyright &copy; 2017-2018 <a href="mailto:By_syk@163.com">By_syk</a>. All rights reserved.
       <br />
       <a href="http://www.miibeian.gov.cn">蜀ICP备16010934号</a>
     </small>
   </div>
   <div class="hidden-xs copyright">
     <small>
-      Copyright &copy; 2017 <a href="mailto:By_syk@163.com">By_syk</a>. All rights reserved.
+      Copyright &copy; 2017-2018 <a href="mailto:By_syk@163.com">By_syk</a>. All rights reserved.
       | <a href="http://www.miibeian.gov.cn" target="_blank">蜀ICP备16010934号</a>
     </small>
   </div>

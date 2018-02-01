@@ -20,17 +20,17 @@
 
 ### 服务器搭建
 
-开发者的搭建环境是 **Ubuntu 14.04.4**、**Node.js v6.2.0**、**MySQL v5.5.53**，并使用 [**forever** 模块](https://github.com/foreverjs/forever)来持久化运行。
+开发者的搭建环境是 **Ubuntu 14.04.4**、**Node.js v6.2.0**、**MySQL v5.5.53**，并使用 [**forever** 模块](https://github.com/foreverjs/forever)（版本@0.15.3）来持久化运行。
 
 除了 **forever**，还依赖以下 Node.js 模块：
 
 ```
-npm install mysql
-npm install express
-npm install body-parser
-npm install cookie-parser
-npm install log4j
-npm install uuid
+npm install mysql@2.15.0
+npm install express@4.16.2
+npm install body-parser@1.18.2
+npm install cookie-parser@1.4.3
+npm install log4js@2.5.2
+npm install uuid@3.2.1
 ```
 
 在建好库表后（[库表结构](https://github.com/by-syk/NanoIconPackServer/blob/master/dll/sql.dll)），启动：
@@ -51,11 +51,17 @@ forever start nano8083.js
 >   ├ pages/      // 网页部分
 >   ├ logs/       // 日志存放文件夹
 >   ├ dll/        // 库表（运行无关）
+>   ├ docs/       // 文档（运行无关）
 >   ├ art/        // 图（运行无关）
 >   ├ .gitignore  // （运行无关）
 >   ├ LICENSE     // （运行无关）
 >   └ README.md   // （运行无关）
 > ```
+
+
+### 接口描述
+
+[查看接口文档](docs/api.md)
 
 
 ### 微控制台
@@ -92,7 +98,7 @@ http://nano.by-syk.com
 
 ### License
 
-    Copyright 2017 By_syk
+    Copyright 2017-2018 By_syk
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -107,4 +113,4 @@ http://nano.by-syk.com
     limitations under the License.
 
 
-*Copyright &#169; 2017 By_syk. All rights reserved.*
+*Copyright &#169; 2017-2018 By_syk. All rights reserved.*

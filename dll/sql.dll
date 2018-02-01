@@ -1,4 +1,4 @@
--- Copyright 2017 By_syk
+-- Copyright 2017-2018 By_syk
 --
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
@@ -104,7 +104,9 @@ CREATE TABLE donate(
   -- 记录者IP
   add_ip CHAR(15),
   -- 删除者IP
-  del_ip CHAR(15)
+  del_ip CHAR(15),
+  -- 记录时间
+  time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 );
 
 -- 图标评分（TODO）

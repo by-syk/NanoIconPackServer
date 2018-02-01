@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 By_syk
+ * Copyright 2017-2018 By_syk
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-var express = require('express'); // npm install express
-var bodyParser = require('body-parser'); // npm install body-parser
-var cookieParser = require('cookie-parser'); // npm install cookie-parser
-var log4js = require('log4js'); // npm install log4js
-// v1: time-based, v4: random
-var uuid = require('uuid/v4'); // npm install uuid
+var express = require('express'); // npm install express@4.16.2
+var bodyParser = require('body-parser'); // npm install body-parser@1.18.2
+var cookieParser = require('cookie-parser'); // npm install cookie-parser@1.4.3
+var log4js = require('log4js'); // npm install log4js@2.5.2
+// uuid/[v1|v3|v4|v5]
+var uuid = require('uuid/v4'); // npm install uuid@3.2.1
 var path = require('path');
 var query = require('./utils/mysql');
 var utils = require('./utils/utils');
@@ -39,13 +39,18 @@ app.use(cookieParser());
 // 支持静态文件
 app.use(express.static('../pages/public'));
 
-// console log is loaded by default, so you won't normally need to do this
-//log4js.loadAppender('console');
-log4js.loadAppender('file');
-//log4js.addAppender(log4js.appenders.console());
-log4js.addAppender(log4js.appenders.file('../logs/nano' + serverPort + '.log'), 'nano' + serverPort);
-var logger = log4js.getLogger('nano' + serverPort);
-logger.setLevel('INFO'); // TRACE, DEBUG, INFO, WARN, ERROR, FATAL
+// 配置日志输出
+log4js.configure({
+  appenders: {
+    nano_file: { type: 'file', filename: '../logs/nano' + serverPort + '.log' },
+    nano_console: { type: 'console' }
+  },
+  categories: {
+    // trace, debug, info, warn, error, fatal
+    default: { appenders: ['nano_file', 'nano_console'], level: 'info' }
+  }
+});
+var logger = log4js.getLogger('nano');
 
 
 // ====================================== API BLOCK START ======================================= //
@@ -76,7 +81,7 @@ app.post('/req/:ip([A-Za-z\\d\._]+)', function(req, res) {
     return;
   }
   var sysApp = req.body.sysApp;
-  if (sysApp == '1' || sysApp == 'true') { // typeof sysApp string
+  if (sysApp == '1' || sysApp == 'true') { // typeof(sysApp) string
     sysApp = 1;
   } else {
     sysApp = 0;
@@ -118,7 +123,7 @@ app.post('/req/:ip([A-Za-z\\d\._]+)', function(req, res) {
   });
 });
 
-// 接口：查询对目标APP的请求适配次数
+// 接口：查询对目标 APP 的请求适配次数
 app.get('/reqnum/:ip([A-Za-z\\d\._]+)/:pkg([A-Za-z\\d\._]+)', function(req, res) {
   var iconPack = req.params.ip;
   var pkg = req.params.pkg;
@@ -149,7 +154,7 @@ app.get('/reqnum/:ip([A-Za-z\\d\._]+)/:pkg([A-Za-z\\d\._]+)', function(req, res)
 });
 
 // TODO DEPRECATED
-// 接口：查询请求数TOP的APP
+// 接口：查询请求数 TOP 的 APP
 app.get('/reqtop/:ip([A-Za-z\\d\._]+)/:user', function(req, res) {
   var iconPack = req.params.ip;
   var user = req.params.user;
@@ -200,7 +205,7 @@ app.get('/reqtop/:ip([A-Za-z\\d\._]+)/:user', function(req, res) {
   });
 });
 
-// 接口：查询请求数TOP的APP
+// 接口：查询请求数 TOP 的 APP
 app.get('/reqtop2/:ip([A-Za-z\\d\._]+)/:user', function(req, res) {
   var iconPack = req.params.ip;
   var user = req.params.user;
@@ -253,7 +258,7 @@ app.get('/reqtop2/:ip([A-Za-z\\d\._]+)/:user', function(req, res) {
 });
 
 // TODO DEPRECATED
-// 接口：在已标记的APP中查询请求数TOP的APP
+// 接口：在已标记的 APP 中查询请求数 TOP 的 APP
 app.get('/reqtopfiltered/:ip([A-Za-z\\d\._]+)/:user', function(req, res) {
   var iconPack = req.params.ip;
   var user = req.params.user;
@@ -269,7 +274,7 @@ app.get('/reqtopfiltered/:ip([A-Za-z\\d\._]+)/:user', function(req, res) {
   });
 });
 
-// 接口：在已标记的APP中查询请求数TOP的APP
+// 接口：在已标记的 APP 中查询请求数 TOP 的 APP
 app.get('/reqtopfiltered2/:ip([A-Za-z\\d\._]+)/:user', function(req, res) {
   var iconPack = req.params.ip;
   var user = req.params.user;
@@ -285,7 +290,7 @@ app.get('/reqtopfiltered2/:ip([A-Za-z\\d\._]+)/:user', function(req, res) {
   });
 });
 
-// 接口：对申请适配的APP标记已处理
+// 接口：对申请适配的 APP 标记已处理
 app.post('/reqfilter/:ip([A-Za-z\\d\._]+)/:user', function(req, res) {
   var iconPack = req.params.ip;
   var user = req.params.user;
@@ -312,7 +317,7 @@ app.post('/reqfilter/:ip([A-Za-z\\d\._]+)/:user', function(req, res) {
   });
 });
 
-// 接口：对申请适配的APP标记未处理
+// 接口：对申请适配的 APP 标记未处理
 app.delete('/reqfilter/:ip([A-Za-z\\d\._]+)/:user', function(req, res) {
   var iconPack = req.params.ip;
   var user = req.params.user;
@@ -341,7 +346,7 @@ app.delete('/reqfilter/:ip([A-Za-z\\d\._]+)/:user', function(req, res) {
   });
 });
 
-// 接口：根据包名、APP中英文名查询APP代码
+// 接口：根据包名、APP 中英文名查询 APP 代码
 app.get('/code/:keyword', function(req, res) {
   var keyword = req.params.keyword;
   if (keyword.length == 1 && keyword.charCodeAt(0) < 128) {
@@ -369,7 +374,7 @@ app.get('/code/:keyword', function(req, res) {
   });
 });
 
-// 接口：根据包名+启动项查询APP代码
+// 接口：根据包名+启动项查询 APP 代码
 app.get('/code/:pkg/:launcher', function(req, res) {
   var pkg = req.params.pkg;
   var launcher = req.params.launcher;
@@ -385,16 +390,17 @@ app.get('/code/:pkg/:launcher', function(req, res) {
   });
 });
 
-// 接口：查询请求总数、APP总数和图标包总数
+// TODO DEPRECATED
+// 接口：查询请求总数、APP 总数和图标包总数
 app.get('/sum', function(req, res) {
   logger.info('GET /sum');
-  query(utils.sqlCmds.sumReqTimes, [], function(err, rows) {
+  query(utils.sqlCmds.sumReqTime, [], function(err, rows) {
     if (err) {
       logger.warn(err);
       res.jsonp(utils.getResRes(3));
       return;
     }
-    query(utils.sqlCmds.sumApps, [], function(err1, rows1) {
+    query(utils.sqlCmds.sumApp, [], function(err1, rows1) {
       var result = {
         reqTimes: rows[0].sum,
         apps: -1,
@@ -406,7 +412,7 @@ app.get('/sum', function(req, res) {
         return;
       }
       result.apps = rows1[0].sum;
-      query(utils.sqlCmds.sumIconPacks, [], function(err2, rows2) {
+      query(utils.sqlCmds.sumIconPack, [], function(err2, rows2) {
         if (err2) {
           logger.warn(err2);
           res.jsonp(utils.getResRes(0, undefined, result));
@@ -416,6 +422,45 @@ app.get('/sum', function(req, res) {
         res.jsonp(utils.getResRes(0, undefined, result));
       });
     });
+  });
+});
+
+// 接口：查询接入的图标包总数
+app.get('/sum/iconpack', function(req, res) {
+  logger.info('GET /sum/iconpack');
+  query(utils.sqlCmds.sumIconPack, [], function(err, rows) {
+    if (err) {
+      logger.warn(err);
+      res.jsonp(utils.getResRes(3));
+      return;
+    }
+    res.jsonp(utils.getResRes(0, undefined, rows[0].sum));
+  });
+});
+
+// 接口：查询申请的 APP 总数
+app.get('/sum/app', function(req, res) {
+  logger.info('GET /sum/app');
+  query(utils.sqlCmds.sumApp, [], function(err, rows) {
+    if (err) {
+      logger.warn(err);
+      res.jsonp(utils.getResRes(3));
+      return;
+    }
+    res.jsonp(utils.getResRes(0, undefined, rows[0].sum));
+  });
+});
+
+// 接口：查询申请总次数
+app.get('/sum/req', function(req, res) {
+  logger.info('GET /sum/req');
+  query(utils.sqlCmds.sumReqTime, [], function(err, rows) {
+    if (err) {
+      logger.warn(err);
+      res.jsonp(utils.getResRes(3));
+      return;
+    }
+    res.jsonp(utils.getResRes(0, undefined, rows[0].sum));
   });
 });
 
@@ -703,13 +748,13 @@ app.get('/page/console', function(req, res) {
   res.sendFile(path.resolve('../pages/console.htm'));
 });
 
-// 页面：APP代码速查
+// 页面：APP 代码速查
 app.get('/page/query', function(req, res) {
   logger.info('GET /page/query');
   res.sendFile(path.resolve('../pages/query.htm'));
 });
 
-// 页面：常用APP代码
+// 页面：常用 APP 代码
 app.get('/page/base', function(req, res) {
   logger.info('GET /page/base');
   res.sendFile(path.resolve('../pages/base.htm'));

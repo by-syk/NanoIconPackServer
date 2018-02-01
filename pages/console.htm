@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <!--
-  Copyright 2017 By_syk
+  Copyright 2017-2018 By_syk
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@
 <script src="../static/js/jquery.copy.js?v=1.1.1"></script>
 
 <script type="text/javascript">
-console.log("%cNanoIconPack Console%c\nhttps://github.com/by-syk/NanoIconPackServer\n%cCopyright © 2017 By_syk. All rights reserved.%c\n\nWelcome. I'm %cBy_syk%c and I run the ugly system.\nAny BUGs, mistakes, suggestion or confusion, send me an E-mail. Thank you!\n\n> %cBy_syk@163.com", "font-weight: bold; font-size: large", "", "color: darkgrey", "", "font-weight: bold", "", "color: red");
+console.log("%cNanoIconPack Console%c\nhttps://github.com/by-syk/NanoIconPackServer\n%cCopyright © 2017-2018 By_syk. All rights reserved.%c\n\nWelcome. I'm %cBy_syk%c and I run the ugly system.\nAny BUGs, mistakes, suggestion or confusion, send me an E-mail. Thank you!\n\n> %cBy_syk@163.com", "font-weight: bold; font-size: large", "", "color: darkgrey", "", "font-weight: bold", "", "color: red");
 $(document).ready(function() {
   /*$('#donateDlg').on('shown.bs.modal', function () {
     $("#donateDesc").typed({
@@ -61,22 +61,42 @@ $(document).ready(function() {
       startDelay: 200
     });
   });*/
-  var sumData = Cookies.getJSON('consoleSum');
-  if (sumData) {
-    fillSumData(sumData);
-  } else { // 使用缓存
-    $.get("/sum", function(data) {
+  showStats();
+});
+function showStats() {
+  var sumIconPack = Cookies.get('consoleSumIp');
+  var sumApp = Cookies.get('consoleSumApp');
+  var sumReqTimes = Cookies.get('consoleSumReq');
+  if (sumIconPack) { // 使用缓存
+    $("#iIconPacks").replaceWith("<span class=\"badge\">" + sumIconPack + "</span>");
+  } else {
+    $.get("/sum/iconpack", function(data) {
       if (data && data.status == 0) {
-        Cookies.set('consoleSum', data.result, {expires: 1}); // 缓存一天
-        fillSumData(data.result);
+        Cookies.set('consoleSumIp', data.result, {expires: 1}); // 缓存一天
+        $("#iIconPacks").replaceWith("<span class=\"badge\">" + data.result + "</span>");
       }
     });
   }
-});
-function fillSumData(data) {
-  $("#iIconPacks").replaceWith("<span class=\"badge\">" + data.iconPacks + "</span>");
-  $("#iApps").replaceWith("<span class=\"badge\">" + data.apps + "</span>");
-  $("#iReqTimes").replaceWith("<span class=\"badge\">" + data.reqTimes + "</span>");
+  if (sumApp) {
+    $("#iApps").replaceWith("<span class=\"badge\">" + sumApp + "</span>");
+  } else {
+    $.get("/sum/app", function(data) {
+      if (data && data.status == 0) {
+        Cookies.set('consoleSumApp', data.result, {expires: 1});
+        $("#iApps").replaceWith("<span class=\"badge\">" + data.result + "</span>");
+      }
+    });
+  }
+  if (sumReqTimes) {
+    $("#iReqTimes").replaceWith("<span class=\"badge\">" + sumReqTimes + "</span>");
+  } else {
+    $.get("/sum/req", function(data) {
+      if (data && data.status == 0) {
+        Cookies.set('consoleSumReq', data.result, {expires: 1});
+        $("#iReqTimes").replaceWith("<span class=\"badge\">" + data.result + "</span>");
+      }
+    });
+  }
 }
 </script>
 </head>
@@ -113,7 +133,7 @@ function fillSumData(data) {
   <div class="jumbotron">
     <div class="container">
       <h1>Welcome</h1>
-      <p>NanoIconPack 微控制台</p>
+      <p><i class="fa fa-microchip"></i> NanoIconPack 微控制台</p>
     </div>
   </div>
   <div class="alert alert-info" role="alert">
@@ -121,6 +141,10 @@ function fillSumData(data) {
     <br />接入图标包：<i id="iIconPacks" class="fa fa-spinner fa-spin"></i>
     |&nbsp;申请APP：<i id="iApps" class="fa fa-spinner fa-spin"></i>
     |&nbsp;申请次：<i id="iReqTimes" class="fa fa-spinner fa-spin"></i>
+  </div>
+  <div class="alert alert-danger" role="alert">
+    <p class="text-left"><i class="fa fa-exclamation-triangle"></i> 由于数据量堆积过大导致接口响应缓慢，开发者正在着手处理中……（该公告撤下即完成优化）</p>
+    <p class="text-right">— 2018/01/27</p>
   </div>
 </div>
 
@@ -162,14 +186,14 @@ function fillSumData(data) {
   <tr height="50px"><td height="50px" valign="middle" align="center">
   <div class="visible-xs-block copyright">
     <small>
-      Copyright &copy; 2017 <a href="mailto:By_syk@163.com">By_syk</a>. All rights reserved.
+      Copyright &copy; 2017-2018 <a href="mailto:By_syk@163.com">By_syk</a>. All rights reserved.
       <br />
       <a href="http://www.miibeian.gov.cn">蜀ICP备16010934号</a>
     </small>
   </div>
   <div class="hidden-xs copyright">
     <small>
-      Copyright &copy; 2017 <a href="mailto:By_syk@163.com">By_syk</a>. All rights reserved.
+      Copyright &copy; 2017-2018 <a href="mailto:By_syk@163.com">By_syk</a>. All rights reserved.
       | <a href="http://www.miibeian.gov.cn" target="_blank">蜀ICP备16010934号</a>
     </small>
   </div>
