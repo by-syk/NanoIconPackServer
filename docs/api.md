@@ -1,6 +1,6 @@
 # API 一览
 
-> 该文档未经严格校对，如有疑问或发现问题请[提交 issue](https://github.com/by-syk/NanoIconPackServer/issues) 或[给我发送邮件](email:By_syk@163.com)。
+> 该文档未经严格校对，如有疑问或发现问题请[提交 issue](https://github.com/by-syk/NanoIconPackServer/issues) 或[给我发送邮件](mailto:By_syk@163.com)。
 
 #### 接口清单
 
@@ -23,7 +23,7 @@
 + [删除赞助记录](#删除赞助记录)
 + [获取目标图标包的赞助记录](#获取目标图标包的赞助记录)
 
-#### 申请适配图标 [目录](#接口清单)
+#### 申请适配图标
 POST `/req/:iconpack`
 
 | PATH 参数 | 类型 | 必须 | 默认值 | 描述 | 例 |
@@ -75,7 +75,7 @@ GET `/req/:iconpack/:pkg`
 }
 ```
 
-#### 查询请求数 TOP 的 APP [目录](#接口清单)
+#### 查询请求数 TOP 的 APP
 GET `/reqtop2/:iconpack/:user`
 
 | PATH 参数 | 类型 | 必须 | 默认值 | 描述 | 例 |
@@ -112,7 +112,7 @@ GET `/reqtop2/:iconpack/:user`
 }
 ```
 
-#### 在已标记的 APP 中查询请求数 TOP 的 APP [目录](#接口清单)
+#### 在已标记的 APP 中查询请求数 TOP 的 APP
 GET `/reqtopfiltered2/:iconpack/:user`
 
 | PATH 参数 | 类型 | 必须 | 默认值 | 描述 | 例 |
@@ -144,7 +144,7 @@ GET `/reqtopfiltered2/:iconpack/:user`
 }
 ```
 
-#### 对申请适配的 APP 标记已处理 [目录](#接口清单)
+#### 对申请适配的 APP 标记已处理
 POST `/reqfilter/:iconpack/:user`
 
 | PATH 参数 | 类型 | 必须 | 默认值 | 描述 | 例 |
@@ -165,7 +165,7 @@ POST `/reqfilter/:iconpack/:user`
 }
 ```
 
-#### 对申请适配的 APP 标记未处理 [目录](#接口清单)
+#### 对申请适配的 APP 标记未处理
 DELETE `/reqfilter/:iconpack/:user`
 
 | PATH 参数 | 类型 | 必须 | 默认值 | 描述 | 例 |
@@ -186,7 +186,7 @@ DELETE `/reqfilter/:iconpack/:user`
 }
 ```
 
-#### 根据包名、APP 中英文名查询 APP 代码 [目录](#接口清单)
+#### 根据包名、APP 中英文名查询 APP 代码
 GET `/code/:keyword`
 
 | PATH 参数 | 类型 | 必须 | 默认值 | 描述 | 例 |
@@ -210,7 +210,7 @@ GET `/code/:keyword`
 }
 ```
 
-#### 根据包名+启动项查询 APP 代码 [目录](#接口清单)
+#### 根据包名+启动项查询 APP 代码
 
 GET `/code/:pkg/:launcher`
 
@@ -241,7 +241,7 @@ GET `/code/:pkg/:launcher`
 }
 ```
 
-#### 查询接入的图标包总数 [目录](#接口清单)
+#### 查询接入的图标包总数
 GET `/sum/iconpack`
 
 返回结果例：
@@ -253,7 +253,7 @@ GET `/sum/iconpack`
 }
 ```
 
-#### 查询申请的 APP 总数 [目录](#接口清单)
+#### 查询申请的 APP 总数
 GET `/sum/app`
 
 返回结果例：
@@ -265,7 +265,7 @@ GET `/sum/app`
 }
 ```
 
-#### 查询申请总次数 [目录](#接口清单)
+#### 查询申请总次数
 GET `/sum/req`
 
 返回结果例：
@@ -277,7 +277,7 @@ GET `/sum/req`
 }
 ```
 
-#### 统计各图标包最近一月申请用户数和申请次数 [目录](#接口清单)
+#### 统计各图标包最近一月申请用户数和申请次数
 GET `/stats/month`
 
 返回结果例：
@@ -308,7 +308,7 @@ GET `/stats/month`
 }
 ```
 
-#### 统计目标图标包周申请趋势 [目录](#接口清单)
+#### 统计目标图标包周申请趋势
 GET `/trend/week/:iconpack`
 
 | PATH 参数 | 类型 | 必须 | 默认值 | 描述 | 例 |
@@ -341,7 +341,7 @@ GET `/trend/week/:iconpack`
 }
 ```
 
-#### 获取所有图标包 [目录](#接口清单)
+#### 获取所有图标包
 GET `/iconpacks`
 
 返回结果例：
@@ -366,7 +366,7 @@ GET `/iconpacks`
 }
 ```
 
-#### 获取各系统常用 APP 代码（如电话、信息、相机等） [目录](#接口清单)
+#### 获取各系统常用 APP 代码（如电话、信息、相机等）
 GET `/base`
 
 返回结果例：
@@ -408,7 +408,7 @@ GET `/base`
 }
 ```
 
-#### 添加赞助记录 [目录](#接口清单)
+#### 添加赞助记录
 POST `/donate/:iconpack/:user`
 
 | PATH 参数 | 类型 | 必须 | 默认值 | 描述 | 例 |
@@ -431,7 +431,7 @@ POST `/donate/:iconpack/:user`
 }
 ```
 
-#### 删除赞助记录 [目录](#接口清单)
+#### 删除赞助记录
 DELETE `/donate`
 
 | QUERY 参数 | 类型 | 必须 | 默认值 | 描述 | 例 |
@@ -446,7 +446,7 @@ DELETE `/donate`
 }
 ```
 
-#### 获取目标图标包的赞助记录 [目录](#接口清单)
+#### 获取目标图标包的赞助记录
 
 返回结果例：
 ```
