@@ -47,7 +47,8 @@ log4js.configure({
   },
   categories: {
     // trace, debug, info, warn, error, fatal
-    default: { appenders: ['nano_file', 'nano_console'], level: 'info' }
+    default: { appenders: ['nano_file'], level: 'info' }
+    //default: { appenders: ['nano_file', 'nano_console'], level: 'info' }
   }
 });
 var logger = log4js.getLogger('nano');

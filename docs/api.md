@@ -76,7 +76,7 @@
 
 + [获取目标图标包的赞助记录](#获取目标图标包的赞助记录)
 
-  DELETE `/donate/:iconpack/:user`
+  GET `/donate/:iconpack/:user`
 
 
 #### 申请适配图标
